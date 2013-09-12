@@ -5,110 +5,111 @@ import java.io.*;
 import Common.Encryptor;
 
 public class ChatServerThread extends Thread {
-	/* The client socket and IO we are going to handle in this thread */
-	protected Socket         socket;
-	protected PrintWriter    out;
-	protected BufferedReader in;
+    /* The client socket and IO we are going to handle in this thread */
+    protected Socket         socket;
+    protected PrintWriter    out;
+    protected BufferedReader in;
 
-	//unique id
-	private int id;
+    //the user this thread corresponds to
+    private UserAccount user;
+    
+    //chat room this belongs to
+    private ChatServerChatRoom chatRoom;
+    //server this belongs to
+    private ChatServerMain chatServer;
 
-	//name
-	private String name;
+    public int getID(){ return user.getID(); }
+    public void setID(int a){ user.setID(a); }
 
-	//chat room this belongs to
-	private ChatServerChatRoom chatRoom;
+    public String getUserName(){ return user.getName(); }
+    public void setUserName(String n){ user.setName(n); }
 
-	public int getID(){ return id; }
-	public void setID(int a){ id = a; }
+    public ChatServerChatRoom getChatRoom(){ return chatRoom; }
 
-	public String getUserName(){ return name; }
-	public void setUserName(String n){ name = n; }
+    public ChatServerThread(Socket socket, UserAccount account, ChatServerChatRoom  chatRoom, ChatServerMain chatServer){
+        user = account;
+        this.chatRoom = chatRoom;
+        this.chatServer = chatServer;
 
-	public ChatServerChatRoom getChatRoom(){ return chatRoom; }
+        /* Create the I/O variables */
+        try {
+            this.out = new PrintWriter(socket.getOutputStream(), true);
+            this.in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-	public ChatServerThread(Socket socket, int i, String n, ChatServerChatRoom chatRoom){
-		name = n;
-		id = i;
+            /* Debug */
+            System.out.println("Client handler thread created.");
+        } catch (IOException e) {
+            System.out.println("IOException: " + e);
+        }
+    }
 
-		//set room
-		this.chatRoom = chatRoom;
+    @Override
+    public void run() {
+        Scanner scanner; //for analyzing text
+        while (true) {
+            try {
+                /* Get string from client */
+                String fromClient = this.in.readLine();
 
-		/* Create the I/O variables */
-		try {
-			this.out = new PrintWriter(socket.getOutputStream(), true);
-			this.in  = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                /* If null, connection is closed, so just finish */
+                if (fromClient == null) {
+                    disconnect(null);
+                }
 
-			/* Debug */
-			System.out.println("Client handler thread created.");
+                /* Handle the text. */
+                if (fromClient.length()>0){ 
+                    if (fromClient.charAt(0)=='/'){ //if it's a command
+                        scanner = new Scanner(fromClient);
+                        String firstWord = scanner.next();
+                        if (firstWord.equalsIgnoreCase("/whisper")){ //to tell a user a private message
+                            if (!scanner.hasNext()) this.out.println("You must specify the target's name.");
+                            String target = scanner.next();
+                            if (!scanner.hasNext()) this.out.println("You must specify a message.");
+                            String message = scanner.next();
+                            if (!chatRoom.tell(target, message, user.getName())) this.out.println("User not found online.");
+                        }
+                        else if (firstWord.equalsIgnoreCase("/nick")){ //to change a user's name
+                            if (!scanner.hasNext()) this.out.println("You must specify a name.");
+                            else if (!chatServer.changeName(scanner.next(), user.getName())) this.out.println("Name already taken.");
+                        }
+                        else if (firstWord.equalsIgnoreCase("/disconnect")){ //to disconnect gracefully
+                            disconnect(scanner.next());
+                        }
+                        else if (firstWord.equalsIgnoreCase("/changeroom")){
+                            if (!scanner.hasNext()) this.out.println("You must specify a room name.");
+                            else if (!chatServer.changeRoom(scanner.next(), user.getName())) this.out.println("Invalid room name specified. ");
+                        }
+                        else this.out.println("Invalid command.");
+                        scanner.close();
+                    }
 
+                    else chatRoom.tellEveryone(name, fromClient);
+                }
 
-		} catch (IOException e) {
-			System.out.println("IOException: " + e);
-		}
-	}
+            } catch (IOException e) {
+                /* On exception, stop the thread */
+                return;
+            }
+        }
+    }
+    
+    public void disconnect(String message){ //called when disconnecting from server
+        System.out.println("Client "+user.getName()+ " disconnected");
+        if (message!=null) chatRoom.tellEveryone(user.getName(), message);
+        chatRoom.tellEveryone(""+user.getName()+" disconnected.", -1, "Server Message"); //server message
+        try{
+        this.in.close();
+        this.out.close();
+        this.socket.close();
+        } catch (Exception e) { /* do nothing */ }
+    }
 
-	@Override
-	public void run() {
-		Scanner scanner; //for analyzing text
-		while (true) {
-			try {
-				/* Get string from client */
-				String fromClient = this.in.readLine();
+    public void tell(String user, String message){
+        if (message==null || message.length()<=0) return;
+        this.out.println(user+": "+message);
+    }
 
-				/* If null, connection is closed, so just finish */
-				if (fromClient == null) {
-					
-				}
-
-				/* Handle the text. */
-				if (fromClient.length()>0){ 
-					if (fromClient.charAt(0)=='/'){ //if it's a command
-						scanner = new Scanner(fromClient);
-						String firstWord = scanner.next();
-						if (firstWord.equalsIgnoreCase("/whisper")){ //to tell a user a private message
-							if (!chatRoom.tell(scanner.next(), scanner.next(), name)) this.out.println("User not found online.");
-						}
-						else if (firstWord.equalsIgnoreCase("/nick")){ //to change a user's name
-							if (!chatRoom.changeName(scanner.next(), id)) this.out.println("Name already taken.");
-						}
-						else if (firstWord.equalsIgnoreCase("/disconnect")){ //to disconnect gracefully
-							disconnect(scanner.next());
-						}
-						else if (firstWord.equalsIgnoreCase("/chatroom")){
-							if (!chatRoom.changeName(scanner.next(), id)) this.out.println("Name already taken.");
-						}
-						else this.out.println("Invalid command.");
-						scanner.close();
-					}
-
-					else chatRoom.tellEveryone(fromClient, id, name);
-				}
-
-			} catch (IOException e) {
-				/* On exception, stop the thread */
-				return;
-			}
-		}
-	}
-	
-	public void disconnect(String message){ //called when disconnecting from server
-		System.out.println("Client "+name+ " disconnected");
-		if (message!=null) chatRoom.tellEveryone(message, id, name);
-		chatRoom.tellEveryone(""+name+" disconnected.", -1, "Server Message"); //server message
-		try{
-		this.in.close();
-		this.out.close();
-		this.socket.close();
-		} catch (Exception e) { /*#nobodycares*/ }
-	}
-
-	public void tell(String message, String user){
-		if (message==null || message.length()<=0) return;
-		this.out.println(user+": "+message);
-	}
-
-	public int hashCode(){
-		return id;
-	}
+    public int hashCode(){
+        return id;
+    }
 }
