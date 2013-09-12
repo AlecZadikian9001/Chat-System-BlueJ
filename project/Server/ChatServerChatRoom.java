@@ -6,7 +6,7 @@ public class ChatServerChatRoom {
     //the name of this chat room
     private String name;
     //the greeting message displayed when a user enters
-    private String greeting;
+    //private String greeting;
     //Is this chat room in tinfoil hat mode?
     private boolean encrypted;
     //unique ID
@@ -15,9 +15,9 @@ public class ChatServerChatRoom {
     //ChatServerThread threads stored here:
     private ArrayList<ChatServerThread> threads;
 
-    public ChatServerChatRoom(String n, String g, int i, boolean e){
+    public ChatServerChatRoom(String n, int i, boolean e){
         name = n;
-        greeting = g;
+        //greeting = g;
         id = i;
         encrypted = e;
         threads = new ArrayList<ChatServerThread>();
@@ -43,7 +43,6 @@ public class ChatServerChatRoom {
             System.out.println("New thread named "+thread.getUserName()+" added and ID set to "+count+".");
         }
         thread.tell("You've joined the chat room "+name+".", "Server Message");
-        thread.tell(greeting);
         tellEveryone(""+thread.getUserName()+" joined the room.", -1, "Server Message"); //id -1 reserved for server messages
     }
 

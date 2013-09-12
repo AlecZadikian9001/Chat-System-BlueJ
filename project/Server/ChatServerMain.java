@@ -1,11 +1,11 @@
 package Server;
 import java.net.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.io.*;
 
 public class ChatServerMain{
     //the database of all users, synced with a persistent store
-    private TreeSet<UserAccount> users;
+    private TreeMap<String, UserAccount> users;
     
     //the database of all chat rooms, synced with a persistent store
     private ArrayList<ChatServerChatRoom> chatRooms;
@@ -52,6 +52,17 @@ public class ChatServerMain{
         }
     }
     
+    public UserAccount handleLogin(String name, String password){ //returns -1 for bad password, 0 for bad username, 1 for success
+        UserAccount account = users.get(name);
+        if (account==null){
+            if (!name.matches("[A-Za-z][A-Za-z0-9_]+")) return null; //invalid username since it can only contain letters, numbers, and underscores
+            account = new UserAccount(name, password, false);
+            return account;
+        }
+        if (!account.password.equals(password)) return null;
+        else return account;
+    }
+    
     public void databaseSetup(){
         //Initialize chat rooms
         chatRooms = new ArrayList<ChatServerChatRoom>();
@@ -67,13 +78,11 @@ public class ChatServerMain{
         chatRooms.add(room);
     }
     
-    public boolean addUser(String name, String password, boolean admin){
-        for (UserAccount user : users){
-            if (user.getName().equalsIgnoreCase(name)) return false;
-        }
-        users.add(new UserAccount(name, password, users.size(), admin));
+  /*  private boolean addUser(String name, String password, boolean admin){
+        if (users.contains(name)) return false;
+        users.put(name, new UserAccount(name, password, users.size(), admin));
         return true;
-    }
+    } */
     
     public boolean banUser(String name){ //ban a user by name
         UserAccount target;

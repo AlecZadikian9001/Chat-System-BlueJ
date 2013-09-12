@@ -1,6 +1,6 @@
 package Server;
 
-public class UserAccount
+public class UserAccount implements Comparable
 {
     private String name; //default nickname
     private int id; //universal ID
@@ -27,4 +27,9 @@ public class UserAccount
     public void setPassword(String pw){ password = pw; }
     public void setIsBanned(boolean b){ isBanned = b; }
     public void setThread(ChatServerThread t){ thread = t; }
+    
+    public int hashCode(){ return id; }
+    public int compare(UserAccount a){
+        return name.compare(a.getName());
+    }
 }

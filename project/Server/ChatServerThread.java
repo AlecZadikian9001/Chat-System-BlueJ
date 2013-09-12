@@ -45,6 +45,15 @@ public class ChatServerThread extends Thread {
 
     @Override
     public void run() {
+        //ask for login credentials
+        this.out.println("Enter username (will be created if doesn't exist).");
+        String name = this.in.readln();
+        this.out.println("Enter your password (or desired password for new account).");
+        String password = this.in.readln();
+        user = chatServer.handleLogin(name, password);
+        if (user==null){ this.out.println("Invalid password or unavailable new username, disconnecting!"); forceDisconnect(); }
+        //else{ System.out.println("Unknown error run ChatServerThread run from handling login!!!"); this.out.println("Technical difficulties, disconnecting."); forceDisconnect(); }
+        
         Scanner scanner; //for analyzing text
         while (true) {
             try {
@@ -95,8 +104,17 @@ public class ChatServerThread extends Thread {
     
     public void disconnect(String message){ //called when disconnecting from server
         System.out.println("Client "+user.getName()+ " disconnected");
-        if (message!=null) chatRoom.tellEveryone(user.getName(), message);
-        chatRoom.tellEveryone(""+user.getName()+" disconnected.", -1, "Server Message"); //server message
+        if (message!=null && chatRoom!=null) chatRoom.tellEveryone(user.getName(), message);
+        if (chatRoom!=null) chatRoom.tellEveryone(""+user.getName()+" disconnected.", -1, "Server Message"); //server message
+        try{
+        this.in.close();
+        this.out.close();
+        this.socket.close();
+        } catch (Exception e) { /* do nothing */ }
+    }
+    
+    public void forceDisconnect(){ //just disconnect, sending no messages
+        System.out.println("Client "+user.getName()+ " disconnected forcibly");
         try{
         this.in.close();
         this.out.close();
