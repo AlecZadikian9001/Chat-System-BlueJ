@@ -9,6 +9,9 @@ public class ChatServerMain{
     
     //the database of all chat rooms, synced with a persistent store
     private ArrayList<ChatServerChatRoom> chatRooms;
+    
+    //the main lobby
+    ChatServerChatRoom mainRoom;
 
     public static void main (String[] args){
         ChatServerMain main = new ChatServerMain(args);
@@ -42,7 +45,7 @@ public class ChatServerMain{
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("New connection from "+clientSocket.getInetAddress().toString());
                 /* Create a thread for it and start, giving it the right id. */
-                ChatServerThread clientThread = new ChatServerThread(clientSocket, null, chatRoom, this); //null user because the thread has to take the username/password
+                ChatServerThread clientThread = new ChatServerThread(clientSocket, null, mainRoom, this); //null user because the thread has to take the username/password
                 chatRooms.get(0).addThread(clientThread); //0 index is the main lobby
                 clientThread.start();
             } catch (IOException e) {
@@ -56,10 +59,10 @@ public class ChatServerMain{
         UserAccount account = users.get(name);
         if (account==null){
             if (!name.matches("[A-Za-z][A-Za-z0-9_]+")) return null; //invalid username since it can only contain letters, numbers, and underscores
-            account = new UserAccount(name, password, false);
+            account = new UserAccount(name, password, users.size(), false);
             return account;
         }
-        if (!account.password.equals(password)) return null;
+        if (!account.getPassword().equals(password)) return null;
         else return account;
     }
     
@@ -69,13 +72,15 @@ public class ChatServerMain{
         
         //TODO read in files
         //this is temporary:
-        ChatServerChatRoom mainRoom = new ChatServerChatRoom("Main", "This is the main lobby.", false);
+        mainRoom = new ChatServerChatRoom("Main", 0);
         chatRooms.add(mainRoom); //0 index is main lobby
     }
 
-    public boolean addChatRoom(String name, String greeting, boolean encrypted){
-        ChatServerChatRoom room = new ChatServerChatRoom(name, greeting, encrypted);
+    public boolean addChatRoom(String name, String greeting){
+        for (ChatServerChatRoom room : chatRooms) if (room.getName().equalsIgnoreCase(name)) return false;
+        ChatServerChatRoom room = new ChatServerChatRoom(name, chatRooms.size());
         chatRooms.add(room);
+        return true;
     }
     
   /*  private boolean addUser(String name, String password, boolean admin){
@@ -85,31 +90,36 @@ public class ChatServerMain{
     } */
     
     public boolean banUser(String name){ //ban a user by name
-        UserAccount target;
-        for (UserAccount user : users){
-            if (user.getName().equalsIgnoreCase(name)){ target = user; break; }
-        }
-        user.setBanned(true);
+        UserAccount user = users.get(name); if (user==null) return false;
+        user.setIsBanned(true);
         disconnectUser(user);
         return true;
     }
     
     public boolean unbanUser(String name){ //unban a user by name
-        for (UserAccount user : users){
-            if (user.getName().equalsIgnoreCase(name)){ user.setBanned(false); return true; }
-        }
+        UserAccount user = users.get(name); if (user==null) return false;
+        user.setIsBanned(false);
         return false;
     }
     
     public boolean disconnectUser(UserAccount account){
-        account.getThread().disconnect(null);
+        ChatServerThread thread = account.getThread();
+        if (thread==null) return false;
+        thread.forceDisconnect(); return true;
     }
     
-    public boolean changeUserName(String newName, int id){
-        for (UserAccount user : users){
-            if (user.getName().equalsIgnoreCase(newName)) return false;
-        }
-		users.get(id).setUserName(newName);
+    public boolean changeUserName(String oldName, String newName){
+        if (users.get(newName)!=null) return false;
+		users.get(oldName).setName(newName);
+		users.put(newName, users.remove(oldName));
 		return true;
 	}
+	
+	public boolean tellUser(String sender, String target, String message){
+	    UserAccount user = users.get(target);
+	    ChatServerThread thread = user.getThread();
+	    if (thread==null) return false;
+	    thread.tell(sender, message);
+	    return true;
+	   }
 }

@@ -1,9 +1,15 @@
 #BlueJ package file
+dependency1.from=ChatClient
+dependency1.to=Out
+dependency1.type=UsesDependency
+dependency2.from=ChatClient
+dependency2.to=In
+dependency2.type=UsesDependency
 package.editor.height=400
 package.editor.width=560
-package.editor.x=220
-package.editor.y=122
-package.numDependencies=0
+package.editor.x=618
+package.editor.y=178
+package.numDependencies=2
 package.numTargets=3
 package.showExtends=true
 package.showUses=true

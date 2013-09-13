@@ -8,18 +8,17 @@ public class ChatServerChatRoom {
     //the greeting message displayed when a user enters
     //private String greeting;
     //Is this chat room in tinfoil hat mode?
-    private boolean encrypted;
+    //private boolean encrypted; Never mind, it always will be.
     //unique ID
     private int id;
 
     //ChatServerThread threads stored here:
     private ArrayList<ChatServerThread> threads;
 
-    public ChatServerChatRoom(String n, int i, boolean e){
+    public ChatServerChatRoom(String n, int i){
         name = n;
         //greeting = g;
         id = i;
-        encrypted = e;
         threads = new ArrayList<ChatServerThread>();
     }
 
@@ -28,7 +27,7 @@ public class ChatServerChatRoom {
         for (int i = 0; i<count; i++){
             if (!threads.get(i).isAlive()){
                 thread.setID(i);
-                thread.setUserName(""+i);
+            //    thread.setUserName(""+i);
                 threads.remove(i);
                 threads.add(i, thread);
                 System.out.println("New thread named "+thread.getUserName()+" added and ID set to "+i+".");
@@ -43,17 +42,17 @@ public class ChatServerChatRoom {
             System.out.println("New thread named "+thread.getUserName()+" added and ID set to "+count+".");
         }
         thread.tell("You've joined the chat room "+name+".", "Server Message");
-        tellEveryone(""+thread.getUserName()+" joined the room.", -1, "Server Message"); //id -1 reserved for server messages
+        tellEveryone( "Server Message", ""+thread.getUserName()+" joined the room."); //id -1 reserved for server messages
     }
 
     public String getName(){ return name; }
 
     public int getID(){ return id; }
 
-    public void tellEveryone(String name, int userID, String message){ //general chat
-        if (a==null || a.length()==0) return;
+    public void tellEveryone(String name, String message){ //general chat
+        if (message==null || message.length()==0) return;
         for (ChatServerThread thread : threads){
-            threads.get(i).tell(name, message);
+            if (!thread.getUserName().equalsIgnoreCase(name)) thread.tell(name, message);
         }
     }
 
