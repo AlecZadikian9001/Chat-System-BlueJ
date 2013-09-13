@@ -1,0 +1,16 @@
+#BlueJ class context
+comment0.params=hostName\ port
+comment0.target=ChatClient(java.lang.String,\ java.lang.String)
+comment1.params=e
+comment1.target=void\ windowClosing(java.awt.event.WindowEvent)
+comment2.params=e
+comment2.target=void\ actionPerformed(java.awt.event.ActionEvent)
+comment3.params=
+comment3.target=void\ encryptStuff()
+comment4.params=
+comment4.target=void\ listen()
+comment5.params=
+comment5.target=void\ run()
+comment6.params=args
+comment6.target=void\ main(java.lang.String[])
+numComments=7

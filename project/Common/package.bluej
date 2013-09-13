@@ -1,8 +1,8 @@
 #BlueJ package file
 package.editor.height=400
 package.editor.width=560
-package.editor.x=1105
-package.editor.y=96
+package.editor.x=248
+package.editor.y=46
 package.numDependencies=0
 package.numTargets=2
 package.showExtends=true
@@ -14,8 +14,13 @@ target1.type=ClassTarget
 target1.width=80
 target1.x=160
 target1.y=70
+target2.editor.height=700
+target2.editor.width=900
+target2.editor.x=18
+target2.editor.y=68
 target2.height=50
 target2.name=DualTester
+target2.naviview.expanded=true
 target2.showInterface=false
 target2.type=ClassTarget
 target2.width=90

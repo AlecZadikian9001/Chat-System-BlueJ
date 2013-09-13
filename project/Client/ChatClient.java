@@ -9,11 +9,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.net.Socket;
+import Common.Encryptor;
 
-public class ChatClient extends JFrame implements ActionListener {
-	private String name;
-	private boolean encrypted;
-
+public class ChatClient extends JFrame implements ActionListener 
+{
+    private String name;
+    private boolean encrypted;
+    private Encryptor ryptor;
+    
     
     private JTextArea  enteredText = new JTextArea(10, 32);
     private JTextField typedText   = new JTextField(32);
@@ -24,23 +27,40 @@ public class ChatClient extends JFrame implements ActionListener {
     // for writing to and reading from the server
     private Out out;
     private In in;
-
-    public ChatClient(String hostName, String port) {
-
+    
+    
+    
+    public ChatClient(String hostName, String port) 
+    {
+        
+        encrypted = false;
+        ryptor= new Encryptor();
         // connect to server
-        try {
+        try 
+        {
             socket = new Socket(hostName, Integer.parseInt(port));
             out    = new Out(socket);
-            in     = new In(socket); //IF SERVER SENDS A SINGLE MESSAGE W/ RIGHT CURLY BRACE, 
+            in     = new In(socket); //IF SERVER SENDS A SINGLE MESSAGE W/ CLOSING CURLY BRACE
         }
         catch (Exception ex) { ex.printStackTrace(); }
 
+        
+        
+        if (in.exists() && in.readLine().length()!=0)
+        {
+            
+            
+        }
+            
+            
         // close output stream  - this will cause listen() to stop and exit
-        addWindowListener(
-            new WindowAdapter() {
-                public void windowClosing(WindowEvent e) {
+        addWindowListener
+        (
+            new WindowAdapter()  
+            {
+                public void windowClosing(WindowEvent e) 
+                {
                     out.close();
-                    
                     
 //                    in.close();
 //                    try                   { socket.close();        }
@@ -55,10 +75,19 @@ public class ChatClient extends JFrame implements ActionListener {
         enteredText.setBackground(Color.LIGHT_GRAY);
         typedText.addActionListener(this);
         
+        
+        
+        /*
+        
+        
+        
         JOptionPane getName = new JOptionPane();
         String nicky = getName.showInputDialog("Please input your nickname.");//gets name
-        out.println("/nick");
+        //out.println("/nick");
+        System.out.println("ball so hatd");
         name = nicky;
+        */
+       
         
         Container content = getContentPane();
         content.add(new JScrollPane(enteredText), BorderLayout.CENTER);
@@ -74,18 +103,26 @@ public class ChatClient extends JFrame implements ActionListener {
         typedText.requestFocusInWindow();
         setVisible(true);
 
+        
+        
     }
 
     // process TextField after user hits Enter
-    public void actionPerformed(ActionEvent e) {
-        out.println(typedText.getText());
+    public void actionPerformed(ActionEvent e) 
+    {
+        
+        out.println(typedText.getText() + "aa");
+        System.out.println("11111");
+        //if ()
         typedText.setText("");
         typedText.requestFocusInWindow();
     }
     
-    public void encryptStuff()
-    {
-    	
+    public void encryptStuff()  //WHEN .IN GETS "}", CALL THIS METHOD
+    { 
+        encrypted = true;
+        
+        
     }
     
     
@@ -93,16 +130,28 @@ public class ChatClient extends JFrame implements ActionListener {
     public void listen() {
         String s;
         while ((s = in.readLine()) != null) {
-            enteredText.insert(s + "\n", enteredText.getText().length());
+            String decryzzled = ryptor.decrypt(s, 5);
+            enteredText.insert(decryzzled + "\n", enteredText.getText().length());
             enteredText.setCaretPosition(enteredText.getText().length());
+            //System.out.println("2222");
         }
+        
+        
+            
         out.close();
         in.close();
         try                 { socket.close();      }
         catch (Exception e) { e.printStackTrace(); }
         System.err.println("Closed client socket");
     }
-
+    
+    public void run()
+    {
+        
+        
+    }
+    
+    
     public static void main(String[] args)  
     {
         ChatClient client = new ChatClient(args[0], args[1]);
