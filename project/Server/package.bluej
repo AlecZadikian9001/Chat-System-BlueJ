@@ -1,64 +1,79 @@
 #BlueJ package file
-dependency1.from=ChatServerMain
-dependency1.to=ChatServerChatRoom
+dependency1.from=ChatServerThread
+dependency1.to=ChatServerMain
 dependency1.type=UsesDependency
 dependency2.from=ChatServerThread
-dependency2.to=ChatServerChatRoom
+dependency2.to=UserAccount
 dependency2.type=UsesDependency
 dependency3.from=ChatServerThread
-dependency3.to=UserAccount
+dependency3.to=ChatServerChatRoom
 dependency3.type=UsesDependency
-dependency4.from=ChatServerThread
-dependency4.to=ChatServerMain
+dependency4.from=ChatServerChatRoom
+dependency4.to=ChatServerThread
 dependency4.type=UsesDependency
-dependency5.from=ChatServerChatRoom
+dependency5.from=ChatServerMain
 dependency5.to=ChatServerThread
 dependency5.type=UsesDependency
 dependency6.from=ChatServerMain
-dependency6.to=UserAccount
+dependency6.to=ChatServerChatRoom
 dependency6.type=UsesDependency
 dependency7.from=ChatServerMain
-dependency7.to=ChatServerThread
+dependency7.to=UserAccount
 dependency7.type=UsesDependency
 dependency8.from=UserAccount
 dependency8.to=ChatServerThread
 dependency8.type=UsesDependency
 package.editor.height=400
 package.editor.width=560
+<<<<<<< HEAD
 package.editor.x=598
 package.editor.y=521
+=======
+package.editor.x=385
+package.editor.y=154
+>>>>>>> 994fa343a0ab312b84408b9e33cc7f599c7af6d8
 package.numDependencies=8
 package.numTargets=4
 package.showExtends=true
 package.showUses=true
-target1.editor.height=768
+target1.editor.height=733
 target1.editor.width=1024
+<<<<<<< HEAD
 target1.editor.x=1360
 target1.editor.y=9
+=======
+target1.editor.x=256
+target1.editor.y=22
+>>>>>>> 994fa343a0ab312b84408b9e33cc7f599c7af6d8
 target1.height=50
 target1.name=ChatServerThread
-target1.naviview.expanded=true
 target1.showInterface=false
 target1.type=ClassTarget
 target1.width=130
 target1.x=10
 target1.y=200
-target2.editor.height=772
+target2.editor.height=733
 target2.editor.width=1280
-target2.editor.x=406
-target2.editor.y=251
+target2.editor.x=0
+target2.editor.y=22
 target2.height=50
 target2.name=ChatServerChatRoom
-target2.naviview.expanded=true
 target2.showInterface=false
 target2.type=ClassTarget
 target2.width=160
 target2.x=250
 target2.y=190
+<<<<<<< HEAD
 target3.editor.height=900
 target3.editor.width=1440
 target3.editor.x=25
 target3.editor.y=24
+=======
+target3.editor.height=733
+target3.editor.width=1280
+target3.editor.x=28
+target3.editor.y=192
+>>>>>>> 994fa343a0ab312b84408b9e33cc7f599c7af6d8
 target3.height=50
 target3.name=ChatServerMain
 target3.showInterface=false
@@ -68,11 +83,15 @@ target3.x=160
 target3.y=10
 target4.editor.height=700
 target4.editor.width=900
+<<<<<<< HEAD
 target4.editor.x=540
 target4.editor.y=135
+=======
+target4.editor.x=380
+target4.editor.y=55
+>>>>>>> 994fa343a0ab312b84408b9e33cc7f599c7af6d8
 target4.height=50
 target4.name=UserAccount
-target4.naviview.expanded=true
 target4.showInterface=false
 target4.type=ClassTarget
 target4.width=100
