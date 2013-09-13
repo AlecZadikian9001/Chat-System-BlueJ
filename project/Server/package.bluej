@@ -25,16 +25,36 @@ dependency8.to=ChatServerThread
 dependency8.type=UsesDependency
 package.editor.height=400
 package.editor.width=560
+<<<<<<< HEAD
 package.editor.x=154
 package.editor.y=174
+=======
+<<<<<<< HEAD
+package.editor.x=598
+package.editor.y=521
+=======
+package.editor.x=385
+package.editor.y=154
+>>>>>>> 994fa343a0ab312b84408b9e33cc7f599c7af6d8
+>>>>>>> 49e20486d8df096a7ce0a68d5cf03889519d9101
 package.numDependencies=8
 package.numTargets=4
 package.showExtends=true
 package.showUses=true
 target1.editor.height=733
+<<<<<<< HEAD
 target1.editor.width=650
 target1.editor.x=573
+=======
+target1.editor.width=1024
+<<<<<<< HEAD
+target1.editor.x=1360
+target1.editor.y=9
+=======
+target1.editor.x=256
+>>>>>>> 49e20486d8df096a7ce0a68d5cf03889519d9101
 target1.editor.y=22
+>>>>>>> 994fa343a0ab312b84408b9e33cc7f599c7af6d8
 target1.height=50
 target1.name=ChatServerThread
 target1.showInterface=false
@@ -51,12 +71,28 @@ target2.name=ChatServerChatRoom
 target2.showInterface=false
 target2.type=ClassTarget
 target2.width=160
+<<<<<<< HEAD
 target2.x=300
 target2.y=220
 target3.editor.height=733
 target3.editor.width=977
 target3.editor.x=552
 target3.editor.y=22
+=======
+target2.x=250
+target2.y=190
+<<<<<<< HEAD
+target3.editor.height=900
+target3.editor.width=1440
+target3.editor.x=25
+target3.editor.y=24
+=======
+target3.editor.height=733
+target3.editor.width=1280
+target3.editor.x=28
+target3.editor.y=192
+>>>>>>> 994fa343a0ab312b84408b9e33cc7f599c7af6d8
+>>>>>>> 49e20486d8df096a7ce0a68d5cf03889519d9101
 target3.height=50
 target3.name=ChatServerMain
 target3.showInterface=false
@@ -66,8 +102,13 @@ target3.x=160
 target3.y=10
 target4.editor.height=700
 target4.editor.width=900
+<<<<<<< HEAD
+target4.editor.x=540
+target4.editor.y=135
+=======
 target4.editor.x=380
 target4.editor.y=55
+>>>>>>> 994fa343a0ab312b84408b9e33cc7f599c7af6d8
 target4.height=50
 target4.name=UserAccount
 target4.showInterface=false
