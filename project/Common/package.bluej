@@ -1,17 +1,13 @@
 #BlueJ package file
 package.editor.height=400
 package.editor.width=560
-<<<<<<< HEAD
-package.editor.x=248
-package.editor.y=46
-=======
 package.editor.x=287
 package.editor.y=156
->>>>>>> 994fa343a0ab312b84408b9e33cc7f599c7af6d8
 package.numDependencies=0
 package.numTargets=2
 package.showExtends=true
 package.showUses=true
+project.charset=MacRoman
 target1.height=50
 target1.name=Encryptor
 target1.showInterface=false
