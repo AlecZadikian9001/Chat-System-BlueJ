@@ -17,9 +17,14 @@ public class ChatServerThread extends Thread {
     private ChatServerChatRoom chatRoom;
     //server this belongs to
     private ChatServerMain chatServer;
+    
+    //id specific to room
+    int id;
+    
+    public boolean isLoggedIn(){ return (user!=null); }
 
-    public int getID(){ return user.getID(); }
-    public void setID(int a){ user.setID(a); }
+    public int getID(){ return id; }
+    public void setID(int a){ id = a; }
 
     public String getUserName(){ return user.getName(); }
     public void setUserName(String n){ user.setName(n); }

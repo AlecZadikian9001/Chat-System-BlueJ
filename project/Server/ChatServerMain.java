@@ -46,8 +46,9 @@ public class ChatServerMain{
                 System.out.println("New connection from "+clientSocket.getInetAddress().toString());
                 /* Create a thread for it and start, giving it the right id. */
                 ChatServerThread clientThread = new ChatServerThread(clientSocket, null, mainRoom, this); //null user because the thread has to take the username/password
-                chatRooms.get(0).addThread(clientThread); //0 index is the main lobby
                 clientThread.start();
+                chatRooms.get(0).addThread(clientThread); //0 index is the main lobby
+                //clientThread.start();
             } catch (IOException e) {
                 System.out.println("Accept failed: " + e);
                 System.exit(1);

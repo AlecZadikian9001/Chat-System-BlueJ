@@ -1,0 +1,23 @@
+#BlueJ class context
+comment0.params=args
+comment0.target=void\ main(java.lang.String[])
+comment1.params=args
+comment1.target=ChatServerMain(java.lang.String[])
+comment2.params=name\ password
+comment2.target=UserAccount\ handleLogin(java.lang.String,\ java.lang.String)
+comment3.params=
+comment3.target=void\ databaseSetup()
+comment4.params=name\ greeting
+comment4.target=boolean\ addChatRoom(java.lang.String,\ java.lang.String)
+comment5.params=name
+comment5.target=boolean\ banUser(java.lang.String)
+comment5.text=\ \ private\ boolean\ addUser(String\ name,\ String\ password,\ boolean\ admin){\n\ \ \ \ \ \ \ \ if\ (users.contains(name))\ return\ false;\n\ \ \ \ \ \ \ \ users.put(name,\ new\ UserAccount(name,\ password,\ users.size(),\ admin));\n\ \ \ \ \ \ \ \ return\ true;\n}
+comment6.params=name
+comment6.target=boolean\ unbanUser(java.lang.String)
+comment7.params=account
+comment7.target=boolean\ disconnectUser(UserAccount)
+comment8.params=oldName\ newName
+comment8.target=boolean\ changeUserName(java.lang.String,\ java.lang.String)
+comment9.params=sender\ target\ message
+comment9.target=boolean\ tellUser(java.lang.String,\ java.lang.String,\ java.lang.String)
+numComments=10

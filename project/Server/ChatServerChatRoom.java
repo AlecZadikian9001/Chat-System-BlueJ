@@ -23,6 +23,9 @@ public class ChatServerChatRoom {
     }
 
     public void addThread(ChatServerThread thread){ //replaces the first dead thread with this one, taking its id
+        while(!thread.isLoggedIn()){
+            try{Thread.sleep(10);} catch (Exception e){}
+        }
         int count = threads.size(); boolean found = false;
         for (int i = 0; i<count; i++){
             if (!threads.get(i).isAlive()){
@@ -38,8 +41,8 @@ public class ChatServerChatRoom {
         if (!found){
             threads.add(thread);
             thread.setID(count);
-            thread.setUserName(""+count);
-            System.out.println("New thread named "+thread.getUserName()+" added and ID set to "+count+".");
+            //thread.setUserName(""+count);
+            System.out.println("New thread added and ID set to "+count+".");
         }
         thread.tell("You've joined the chat room "+name+".", "Server Message");
         tellEveryone( "Server Message", ""+thread.getUserName()+" joined the room."); //id -1 reserved for server messages
