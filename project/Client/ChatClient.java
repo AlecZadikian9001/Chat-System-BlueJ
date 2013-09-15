@@ -20,6 +20,7 @@ public class ChatClient extends JFrame implements ActionListener
     
     private JTextArea  enteredText = new JTextArea(10, 32);
     private JTextField typedText   = new JTextField(32);
+  
 
     // socket for connection to chat server
     private Socket socket;
@@ -72,15 +73,12 @@ public class ChatClient extends JFrame implements ActionListener
 
         // create GUI stuff
         enteredText.setEditable(false);
-        enteredText.setBackground(Color.LIGHT_GRAY);
+        enteredText.setBackground(Color.BLACK);
         typedText.addActionListener(this);
         
         
         
-        /*
-        
-        
-        
+        /*   
         JOptionPane getName = new JOptionPane();
         String nicky = getName.showInputDialog("Please input your nickname.");//gets name
         //out.println("/nick");
@@ -97,7 +95,7 @@ public class ChatClient extends JFrame implements ActionListener
         //put button 
         //every time message is sent while encryption is on, put {slash in front of it
         // display the window, with focus on typing box
-        setTitle("Chat Client 1.0: [" + hostName + ":" + port + "]");
+        setTitle("Chat Client 9000!!!!: [" + hostName + ":" + port + "]");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         typedText.requestFocusInWindow();
@@ -110,9 +108,10 @@ public class ChatClient extends JFrame implements ActionListener
     // process TextField after user hits Enter
     public void actionPerformed(ActionEvent e) 
     {
+        String outy = ryptor.encrypt(typedText.getText(),5);
         
-        out.println(typedText.getText() + "aa");
-        System.out.println("11111");
+        out.println(outy);
+        //System.out.println("11111");
         //if ()
         typedText.setText("");
         typedText.requestFocusInWindow();
