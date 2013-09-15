@@ -1,6 +1,6 @@
 package Server;
 
-public class UserAccount implements Comparable
+public class UserAccount
 {
     private String name; //default nickname
     private int id; //universal ID
@@ -29,7 +29,4 @@ public class UserAccount implements Comparable
     public void setThread(ChatServerThread t){ thread = t; }
     
     public int hashCode(){ return id; }
-    public int compare(UserAccount a){
-        return name.compare(a.getName());
-    }
 }

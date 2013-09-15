@@ -1,13 +1,22 @@
 #BlueJ package file
 package.editor.height=400
 package.editor.width=560
+<<<<<<< HEAD
 package.editor.x=546
 package.editor.y=550
+=======
+package.editor.x=598
+package.editor.y=158
+>>>>>>> 0b8847f97f6a8a9ca58bb148bd2aa22be92f5e1e
 package.numDependencies=0
 package.numTargets=3
 package.showExtends=true
 package.showUses=true
+<<<<<<< HEAD
 project.charset=UTF-8
+=======
+project.charset=MacRoman
+>>>>>>> 0b8847f97f6a8a9ca58bb148bd2aa22be92f5e1e
 target1.height=62
 target1.name=Common
 target1.type=PackageTarget

@@ -17,9 +17,14 @@ public class ChatServerThread extends Thread {
     private ChatServerChatRoom chatRoom;
     //server this belongs to
     private ChatServerMain chatServer;
+    
+    //id specific to room
+    int id;
+    
+    public boolean isLoggedIn(){ return (user!=null); }
 
-    public int getID(){ return user.getID(); }
-    public void setID(int a){ user.setID(a); }
+    public int getID(){ return id; }
+    public void setID(int a){ id = a; }
 
     public String getUserName(){ return user.getName(); }
     public void setUserName(String n){ user.setName(n); }
@@ -42,23 +47,35 @@ public class ChatServerThread extends Thread {
             System.out.println("IOException: " + e);
         }
     }
+    
+    private void send(String a){
+        a = Encryptor.encrypt(a, 5); //encrypt it 5 times
+        this.out.println(a);
+    }
+    
+    private String receive(){
+        try{
+      return Encryptor.decrypt(this.in.readLine(), 5); //decrypt it 5 times
+    } catch (Exception e) {}
+    return null;
+    }
 
     @Override
     public void run() {
         //ask for login credentials
-        this.out.println("Enter username (will be created if doesn't exist).");
-        String name = this.in.readln();
-        this.out.println("Enter your password (or desired password for new account).");
-        String password = this.in.readln();
+        send("Enter username (will be created if doesn't exist).");
+        String name = receive();
+        send("Enter your password (or desired password for new account).");
+        String password = receive();
         user = chatServer.handleLogin(name, password);
-        if (user==null){ this.out.println("Invalid password or unavailable new username, disconnecting!"); forceDisconnect(); }
+        if (user==null){ send("Invalid password or unavailable new username, disconnecting!"); forceDisconnect(); }
         //else{ System.out.println("Unknown error run ChatServerThread run from handling login!!!"); this.out.println("Technical difficulties, disconnecting."); forceDisconnect(); }
         
         Scanner scanner; //for analyzing text
         while (true) {
             try {
                 /* Get string from client */
-                String fromClient = this.in.readLine();
+                String fromClient = receive();
 
                 /* If null, connection is closed, so just finish */
                 if (fromClient == null) {
@@ -71,31 +88,31 @@ public class ChatServerThread extends Thread {
                         scanner = new Scanner(fromClient);
                         String firstWord = scanner.next();
                         if (firstWord.equalsIgnoreCase("/whisper")){ //to tell a user a private message
-                            if (!scanner.hasNext()) this.out.println("You must specify the target's name.");
+                            if (!scanner.hasNext()) send("You must specify the target's name.");
                             String target = scanner.next();
-                            if (!scanner.hasNext()) this.out.println("You must specify a message.");
+                            if (!scanner.hasNext()) send("You must specify a message.");
                             String message = scanner.next();
-                            if (!chatRoom.tell(target, message, user.getName())) this.out.println("User not found online.");
+                            if (!chatServer.tellUser(user.getName(), target, message)) send("User not found online.");
                         }
                         else if (firstWord.equalsIgnoreCase("/nick")){ //to change a user's name
-                            if (!scanner.hasNext()) this.out.println("You must specify a name.");
-                            else if (!chatServer.changeName(scanner.next(), user.getName())) this.out.println("Name already taken.");
+                            if (!scanner.hasNext()) send("You must specify a name.");
+                            else if (!chatServer.changeUserName(user.getName(), scanner.next())) send("Name already taken or invalid.");
                         }
                         else if (firstWord.equalsIgnoreCase("/disconnect")){ //to disconnect gracefully
                             disconnect(scanner.next());
                         }
-                        else if (firstWord.equalsIgnoreCase("/changeroom")){
-                            if (!scanner.hasNext()) this.out.println("You must specify a room name.");
-                            else if (!chatServer.changeRoom(scanner.next(), user.getName())) this.out.println("Invalid room name specified. ");
-                        }
-                        else this.out.println("Invalid command.");
+                  /*      else if (firstWord.equalsIgnoreCase("/changeroom")){
+                            if (!scanner.hasNext()) send("You must specify a room name.");
+                            else if (!chatServer.changeRoom(scanner.next(), user.getName())) send("Invalid room name specified. ");   TODO
+                        } */
+                        else send("Invalid command.");
                         scanner.close();
                     }
 
                     else chatRoom.tellEveryone(name, fromClient);
                 }
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 /* On exception, stop the thread */
                 return;
             }
@@ -105,7 +122,7 @@ public class ChatServerThread extends Thread {
     public void disconnect(String message){ //called when disconnecting from server
         System.out.println("Client "+user.getName()+ " disconnected");
         if (message!=null && chatRoom!=null) chatRoom.tellEveryone(user.getName(), message);
-        if (chatRoom!=null) chatRoom.tellEveryone(""+user.getName()+" disconnected.", -1, "Server Message"); //server message
+        if (chatRoom!=null) chatRoom.tellEveryone("Server Message", ""+user.getName()+" disconnected."); //server message
         try{
         this.in.close();
         this.out.close();
@@ -124,10 +141,6 @@ public class ChatServerThread extends Thread {
 
     public void tell(String user, String message){
         if (message==null || message.length()<=0) return;
-        this.out.println(user+": "+message);
-    }
-
-    public int hashCode(){
-        return id;
+        send(user+": "+message);
     }
 }
