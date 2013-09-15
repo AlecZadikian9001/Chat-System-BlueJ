@@ -7,8 +7,13 @@ dependency2.to=In
 dependency2.type=UsesDependency
 package.editor.height=400
 package.editor.width=560
+<<<<<<< HEAD
 package.editor.x=531
 package.editor.y=631
+=======
+package.editor.x=618
+package.editor.y=178
+>>>>>>> 0b8847f97f6a8a9ca58bb148bd2aa22be92f5e1e
 package.numDependencies=2
 package.numTargets=3
 package.showExtends=true
@@ -20,17 +25,29 @@ target1.type=ClassTarget
 target1.width=80
 target1.x=10
 target1.y=90
+target2.editor.height=803
+target2.editor.width=1193
+target2.editor.x=658
+target2.editor.y=198
 target2.height=50
 target2.name=In
+target2.naviview.expanded=true
 target2.showInterface=false
 target2.type=ClassTarget
 target2.width=80
 target2.x=160
 target2.y=70
+<<<<<<< HEAD
 target3.editor.height=700
 target3.editor.width=900
 target3.editor.x=519
 target3.editor.y=22
+=======
+target3.editor.height=865
+target3.editor.width=1368
+target3.editor.x=717
+target3.editor.y=144
+>>>>>>> 0b8847f97f6a8a9ca58bb148bd2aa22be92f5e1e
 target3.height=50
 target3.name=ChatClient
 target3.naviview.expanded=true
