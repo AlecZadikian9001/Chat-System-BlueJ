@@ -52,7 +52,7 @@ public class ChatServerChatRoom {
     public void tellEveryone(String name, String message){ //general chat
         if (message==null || message.length()==0) return;
         for (ChatServerThread thread : threads){
-            if (!thread.getUserName().equalsIgnoreCase(name)) thread.tell(name, message);
+            if (thread!=null && thread.isAlive() && thread.getUserName()!=null && !thread.getUserName().equalsIgnoreCase(name)) thread.tell(name, message);
         }
     }
 

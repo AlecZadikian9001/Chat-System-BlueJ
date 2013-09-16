@@ -60,29 +60,34 @@ public class ChatServerMain{
     public UserAccount handleLogin(String name, String password){ //returns null if error
         if (name==null || password==null){ System.out.println("ERROR IN handleLogin"); return null; }
         UserAccount account = users.get(name.toLowerCase());
-        if (account==null){
+        if (account==null){ //if a new user accout must be created
             if (!name.matches("[A-Za-z][A-Za-z0-9_]+")) return null; //invalid username since it can only contain letters, numbers, and underscores
             account = new UserAccount(name, password, users.size(), false);
             users.put(name.toLowerCase(), account); //to make name mappings non-case-sensitive
             return account;
         }
-        if (!account.getPassword().equals(password)) return null;
-        if (account.getThread()!=null){
+        if (!account.getPassword().equals(password)) return null; //if user exists, but login fails
+        if (account.getThread()!=null && account.getThread().isAlive()){ //if user is already logged in, and login succeeds
             System.out.println("Multiple login.");
             account.getThread().disconnect("I am now signing in from a different location.");
+          // return null; //TEMPORARY!!! TODO
         }
         return account;
     }
     
-    public void databaseSetup(){
+    public void databaseSetup(){ //import data from persistent stores
         //Initialize chat rooms
         chatRooms = new ArrayList<ChatServerChatRoom>();
+        users = new TreeMap();
         
         //TODO read in files
-        //this is temporary:
-        users = new TreeMap();
+        //this is temporary
         mainRoom = new ChatServerChatRoom("Main", 0);
         chatRooms.add(mainRoom); //0 index is main lobby
+    }
+    
+    public void quit(){ //called when closing server down so data is saved to persistent stores
+        
     }
 
     public boolean addChatRoom(String name, String greeting){
@@ -126,7 +131,7 @@ public class ChatServerMain{
     }
     
     public boolean tellUser(String sender, String target, String message){
-        UserAccount user = users.get(target);
+        UserAccount user = users.get(target.toLowerCase());
         ChatServerThread thread = user.getThread();
         if (thread==null) return false;
         thread.tell(sender, message);

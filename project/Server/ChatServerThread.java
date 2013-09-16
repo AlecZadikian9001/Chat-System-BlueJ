@@ -21,7 +21,7 @@ public class ChatServerThread extends Thread {
     //id specific to room
     int id;
 
-    public static final boolean ENCRYPTED = true; //encryption enabled? false for server debug
+    public static final boolean ENCRYPTED = false; //encryption enabled? false for server debug
 
     public boolean isLoggedIn(){ return (user!=null); }
 
@@ -29,7 +29,7 @@ public class ChatServerThread extends Thread {
 
     public void setID(int a){ id = a; }
 
-    public String getUserName(){ return user.getName(); }
+    public String getUserName(){ if (user!=null) return user.getName(); return null; }
 
     public void setUserName(String n){ user.setName(n); }
 
@@ -72,12 +72,13 @@ public class ChatServerThread extends Thread {
         String name = receive();
         send("Enter your password (or desired password for new account).");
         String password = receive();
+        System.out.println("Handling login for "+name+", password is "+password+".");
         user = chatServer.handleLogin(name, password);
-        if (user==null){ send("Invalid password or username, disconnecting!"); forceDisconnect(); }
+        if (user==null){ send("Invalid password or username, disconnecting!"); System.out.println("Disconnecting user because of bad login."); forceDisconnect(); return; }
         user.setThread(this);
         
-        this.tell("Server Message", "You've joined the chat room "+name+".");
-        chatRoom.tellEveryone( "Server Message", ""+user.getName()+" joined the room.");
+        this.tell("Server Message", "You've joined the chat room "+chatRoom.getName()+".");
+        chatRoom.tellEveryone("Server Message", ""+user.getName()+" joined the room.");
         //else{ System.out.println("Unknown error run ChatServerThread run from handling login!!!"); this.out.println("Technical difficulties, disconnecting."); forceDisconnect(); }
 
         Scanner scanner; //for analyzing text
@@ -101,6 +102,7 @@ public class ChatServerThread extends Thread {
                             String target = scanner.next();
                             if (!scanner.hasNext()) send("You must specify a message.");
                             String message = scanner.next();
+                            System.out.println("User "+user.getName()+" saying (privately) "+message+" to target "+target+".");
                             if (!chatServer.tellUser(user.getName()+" (privately)", target, message)) send("User not found online.");
                         }
                         else if (firstWord.equalsIgnoreCase("/nick")){ //to change a user's name
@@ -141,7 +143,7 @@ public class ChatServerThread extends Thread {
             this.in.close();
             this.out.close();
             this.socket.close();
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) { System.out.println("Caught non-problematic exception: "+e); }
         this.stop();
     }
 
