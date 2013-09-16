@@ -34,6 +34,6 @@ public class DualTester {
 			public void run(){
 				ChatClient.main(argsfinal);
 			}
-		}.start();
+		}.start(); 
 	}
 }

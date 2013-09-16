@@ -1,5 +1,5 @@
 package Client;
-
+import Common.Encryptor;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.JFrame;
@@ -55,13 +55,6 @@ public class ChatClient extends JFrame implements ActionListener {
         enteredText.setEditable(false);
         enteredText.setBackground(Color.BLACK);
         typedText.addActionListener(this);
-        
-<<<<<<< HEAD
-        
-        
-        /*   
-=======
->>>>>>> 0b8847f97f6a8a9ca58bb148bd2aa22be92f5e1e
         JOptionPane getName = new JOptionPane();
         String nicky = getName.showInputDialog("Please input your nickname.");//gets name
         out.println("/nick");
@@ -84,20 +77,11 @@ public class ChatClient extends JFrame implements ActionListener {
     }
 
     // process TextField after user hits Enter
-<<<<<<< HEAD
     public void actionPerformed(ActionEvent e) 
     {
-        String outy = ryptor.encrypt(typedText.getText(),5);
+        String outy = Encryptor.encrypt(typedText.getText(),5);
         
         out.println(outy);
-        //System.out.println("11111");
-        //if ()
-=======
-    public void actionPerformed(ActionEvent e) {
-        out.println(typedText.getText());
->>>>>>> 0b8847f97f6a8a9ca58bb148bd2aa22be92f5e1e
-        typedText.setText("");
-        typedText.requestFocusInWindow();
     }
     
     public void encryptStuff()

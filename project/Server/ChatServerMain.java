@@ -37,10 +37,11 @@ public class ChatServerMain{
             System.out.println("IOException: " + e);
             System.exit(1);
         }
-
+        System.out.println("1");
         /* In the main thread, continuously listen for new clients and spin off threads for them. */
         while (true) {
             try {
+                 System.out.println("2");
                 /* Get a new client */
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("New connection from "+clientSocket.getInetAddress().toString());
@@ -56,15 +57,21 @@ public class ChatServerMain{
         }
     }
     
-    public UserAccount handleLogin(String name, String password){ //returns -1 for bad password, 0 for bad username, 1 for success
-        UserAccount account = users.get(name);
+    public UserAccount handleLogin(String name, String password){ //returns null if error
+        if (name==null || password==null){ System.out.println("ERROR IN handleLogin"); return null; }
+        UserAccount account = users.get(name.toLowerCase());
         if (account==null){
             if (!name.matches("[A-Za-z][A-Za-z0-9_]+")) return null; //invalid username since it can only contain letters, numbers, and underscores
             account = new UserAccount(name, password, users.size(), false);
+            users.put(name.toLowerCase(), account); //to make name mappings non-case-sensitive
             return account;
         }
         if (!account.getPassword().equals(password)) return null;
-        else return account;
+        if (account.getThread()!=null){
+            System.out.println("Multiple login.");
+            account.getThread().disconnect("I am now signing in from a different location.");
+        }
+        return account;
     }
     
     public void databaseSetup(){
@@ -73,6 +80,7 @@ public class ChatServerMain{
         
         //TODO read in files
         //this is temporary:
+        users = new TreeMap();
         mainRoom = new ChatServerChatRoom("Main", 0);
         chatRooms.add(mainRoom); //0 index is main lobby
     }
@@ -91,14 +99,14 @@ public class ChatServerMain{
     } */
     
     public boolean banUser(String name){ //ban a user by name
-        UserAccount user = users.get(name); if (user==null) return false;
+        UserAccount user = users.get(name.toLowerCase()); if (user==null) return false;
         user.setIsBanned(true);
         disconnectUser(user);
         return true;
     }
     
     public boolean unbanUser(String name){ //unban a user by name
-        UserAccount user = users.get(name); if (user==null) return false;
+        UserAccount user = users.get(name.toLowerCase()); if (user==null) return false;
         user.setIsBanned(false);
         return false;
     }
@@ -110,17 +118,18 @@ public class ChatServerMain{
     }
     
     public boolean changeUserName(String oldName, String newName){
-        if (users.get(newName)!=null) return false;
-		users.get(oldName).setName(newName);
-		users.put(newName, users.remove(oldName));
-		return true;
-	}
-	
-	public boolean tellUser(String sender, String target, String message){
-	    UserAccount user = users.get(target);
-	    ChatServerThread thread = user.getThread();
-	    if (thread==null) return false;
-	    thread.tell(sender, message);
-	    return true;
-	   }
+        if (users.get(newName.toLowerCase())!=null) return false;
+        UserAccount account = users.remove(oldName.toLowerCase());
+        account.setName(newName);
+        users.put(newName.toLowerCase(), account);
+        return true;
+    }
+    
+    public boolean tellUser(String sender, String target, String message){
+        UserAccount user = users.get(target);
+        ChatServerThread thread = user.getThread();
+        if (thread==null) return false;
+        thread.tell(sender, message);
+        return true;
+       }
 }
