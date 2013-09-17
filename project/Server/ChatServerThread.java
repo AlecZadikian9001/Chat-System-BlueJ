@@ -84,22 +84,11 @@ public class ChatServerThread extends Thread {
         Scanner scanner; //for analyzing text
         while (true) {
             try {
-                if (user==null){ //check if thread should be killed off
-                    try{
-                        this.in.close();
-                        this.out.close();
-                        this.socket.close();
-                    } catch (Exception e) { System.out.println("Caught non-problematic exception: "+e); }
-                }
+                if (user==null) return; //check if thread should be killed off
+
                 /* Get string from client */
                 String fromClient = receive();
-                if (user==null){ //check if thread should be killed off
-                    try{
-                        this.in.close();
-                        this.out.close();
-                        this.socket.close();
-                    } catch (Exception e) { System.out.println("Caught non-problematic exception: "+e); }
-                }
+                if (user==null) return; //check if thread should be killed off
 
                 /* If null, connection is closed, so just finish */
                 if (fromClient == null) {
@@ -155,7 +144,11 @@ public class ChatServerThread extends Thread {
         if (chatRoom!=null) chatRoom.tellEveryone("Server Message", ""+user.getName()+" disconnected"); //server message
         tell("Server Message", "You have been disconnected: "+message);
         this.user = null; //causes the thread to stop
-        // this.user = null; //causes the thread to stop
+        try{
+            this.socket.close();
+            this.in.close();
+            this.out.close();
+        } catch (Exception e) { System.out.println("Caught non-problematic exception: "+e); }
     }
 
     public void forceDisconnect(){ //just disconnect, sending no messages
