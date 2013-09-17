@@ -1,5 +1,6 @@
 package Client;
 
+import Common.Encryptor;
 import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -29,7 +30,8 @@ public class Out {
 
 
     public void println()          { out.println();  out.flush(); }
-    public void println(Object x)  { out.println(x); out.flush(); }
+    public void println(Object x)  { String bob = Encryptor.encrypt((String) x,5);
+        out.println(bob); out.flush(); }
     public void println(boolean x) { out.println(x); out.flush(); }
     public void println(char x)    { out.println(x); out.flush(); }
     public void println(double x)  { out.println(x); }
@@ -38,7 +40,8 @@ public class Out {
     public void println(long x)    { out.println(x); }
 
     public void print()            {                 out.flush(); }
-    public void print(Object x)    { out.print(x);   out.flush(); }
+    public void print(Object x)    { String bob = Encryptor.encrypt((String) x,5);
+        out.print(bob); out.flush();   out.flush(); }
     public void print(boolean x)   { out.print(x);   out.flush(); }
     public void print(char x)      { out.print(x);   out.flush(); }
     public void print(double x)    { out.print(x);   out.flush(); }

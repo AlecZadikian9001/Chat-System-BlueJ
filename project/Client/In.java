@@ -1,5 +1,5 @@
 package Client;
-
+import Common.Encryptor;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -205,7 +205,7 @@ public final class In {
      */
     public String readLine() {
         String line;
-        try                 { line = scanner.nextLine(); }
+        try                 { line = Encryptor.decrypt(scanner.nextLine(),5); }
         catch (Exception e) { line = null;               }
         return line;
     }

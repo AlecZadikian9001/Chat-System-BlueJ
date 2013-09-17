@@ -21,7 +21,7 @@ public class ChatServerThread extends Thread {
     //id specific to room
     int id;
 
-    public static final boolean ENCRYPTED = false; //encryption enabled? false for server debug
+    public static final boolean ENCRYPTED = true; //encryption enabled? false for server debug
 
     public boolean isLoggedIn(){ return (user!=null); }
 
@@ -76,7 +76,7 @@ public class ChatServerThread extends Thread {
         user = chatServer.handleLogin(name, password);
         if (user==null){ send("Invalid password or username, disconnecting!"); System.out.println("Disconnecting user because of bad login."); forceDisconnect(); return; }
         user.setThread(this);
-        
+
         this.tell("Server Message", "You've joined the chat room "+chatRoom.getName()+".");
         chatRoom.tellEveryone("Server Message", ""+user.getName()+" joined the room.");
         //else{ System.out.println("Unknown error run ChatServerThread run from handling login!!!"); this.out.println("Technical difficulties, disconnecting."); forceDisconnect(); }
@@ -84,8 +84,11 @@ public class ChatServerThread extends Thread {
         Scanner scanner; //for analyzing text
         while (true) {
             try {
+                if (user==null) return; //check if thread should be killed off
+
                 /* Get string from client */
                 String fromClient = receive();
+                if (user==null) return; //check if thread should be killed off
 
                 /* If null, connection is closed, so just finish */
                 if (fromClient == null) {
@@ -110,7 +113,7 @@ public class ChatServerThread extends Thread {
                             String oldName = user.getName();
                             if (!chatServer.changeUserName(user.getName(), scanner.next())){ send("Name already taken or invalid."); return; }
                             if (chatRoom!=null) chatRoom.tellEveryone("Server Message", "User "+oldName+" is now known as "+user.getName()+"."); //server message  
-                            }
+                        }
                         else if (firstWord.equalsIgnoreCase("/disconnect")){ //to disconnect gracefully
                             String message = null;
                             if (scanner.hasNext()) message = scanner.next();
@@ -135,26 +138,24 @@ public class ChatServerThread extends Thread {
     }
 
     public void disconnect(String message){ //called when disconnecting from server
-        if (message == null) message = "";
+        if (message == null) message = "No message given.";
         System.out.println("Client "+user.getName()+ " disconnected");
         if (message!=null && chatRoom!=null) chatRoom.tellEveryone(user.getName()+" (disconnecting)", message);
         if (chatRoom!=null) chatRoom.tellEveryone("Server Message", ""+user.getName()+" disconnected"); //server message
+        tell("Server Message", "You have been disconnected: "+message);
+        this.user = null; //causes the thread to stop
         try{
+            this.socket.close();
             this.in.close();
             this.out.close();
-            this.socket.close();
         } catch (Exception e) { System.out.println("Caught non-problematic exception: "+e); }
-        this.stop();
     }
 
     public void forceDisconnect(){ //just disconnect, sending no messages
         System.out.println("Client disconnected forcibly");
-        try{
-            this.in.close();
-            this.out.close();
-            this.socket.close();
-        } catch (Exception e) { /* do nothing */ }
-        this.stop();
+        tell("Server Message", "You have been disconnected forcibly.");
+        this.user = null; //causes the thread to stop
+        //this.user = null;
     }
 
     public void tell(String user, String message){

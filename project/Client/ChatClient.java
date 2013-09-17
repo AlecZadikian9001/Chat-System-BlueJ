@@ -12,6 +12,7 @@ import java.net.Socket;
 
 public class ChatClient extends JFrame implements ActionListener {
 	private String name;
+	private String pass;
 	private boolean encrypted;
 
     
@@ -53,12 +54,21 @@ public class ChatClient extends JFrame implements ActionListener {
 
         // create GUI stuff
         enteredText.setEditable(false);
-        enteredText.setBackground(Color.BLACK);
+        enteredText.setBackground(Color.GREEN);
         typedText.addActionListener(this);
+        
+        
         JOptionPane getName = new JOptionPane();
         String nicky = getName.showInputDialog("Please input your nickname.");//gets name
-        out.println("/nick");
+        out.println(nicky);
         name = nicky;
+        
+        JOptionPane getPass = new JOptionPane();
+        String pizzle = getPass.showInputDialog("Please input your password.");//gets name
+        out.println(pizzle);
+        pass= pizzle;
+        
+        
         
         Container content = getContentPane();
         content.add(new JScrollPane(enteredText), BorderLayout.CENTER);
@@ -79,19 +89,16 @@ public class ChatClient extends JFrame implements ActionListener {
     // process TextField after user hits Enter
     public void actionPerformed(ActionEvent e) 
     {
-        String outy = Encryptor.encrypt(typedText.getText(),5);
-        
+        String outy = typedText.getText();
         out.println(outy);
-    }
-    
-    public void encryptStuff()
-    {
-    	
+        typedText.setText("");
+        typedText.requestFocusInWindow();
     }
     
     
     // listen to socket and print everything that server broadcasts
-    public void listen() {
+    public void listen() 
+    {
         String s;
         while ((s = in.readLine()) != null) {
             enteredText.insert(s + "\n", enteredText.getText().length());

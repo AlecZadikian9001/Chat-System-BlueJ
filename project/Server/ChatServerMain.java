@@ -6,10 +6,10 @@ import java.io.*;
 public class ChatServerMain{
     //the database of all users, synced with a persistent store
     private TreeMap<String, UserAccount> users;
-    
+
     //the database of all chat rooms, synced with a persistent store
     private ArrayList<ChatServerChatRoom> chatRooms;
-    
+
     //the main lobby
     ChatServerChatRoom mainRoom;
 
@@ -41,7 +41,7 @@ public class ChatServerMain{
         /* In the main thread, continuously listen for new clients and spin off threads for them. */
         while (true) {
             try {
-                 System.out.println("2");
+                System.out.println("2");
                 /* Get a new client */
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("New connection from "+clientSocket.getInetAddress().toString());
@@ -56,7 +56,7 @@ public class ChatServerMain{
             }
         }
     }
-    
+
     public UserAccount handleLogin(String name, String password){ //returns null if error
         if (name==null || password==null){ System.out.println("ERROR IN handleLogin"); return null; }
         UserAccount account = users.get(name.toLowerCase());
@@ -68,26 +68,24 @@ public class ChatServerMain{
         }
         if (!account.getPassword().equals(password)) return null; //if user exists, but login fails
         if (account.getThread()!=null && account.getThread().isAlive()){ //if user is already logged in, and login succeeds
-            System.out.println("Multiple login.");
             account.getThread().disconnect("I am now signing in from a different location.");
-          // return null; //TEMPORARY!!! TODO
         }
         return account;
     }
-    
+
     public void databaseSetup(){ //import data from persistent stores
         //Initialize chat rooms
         chatRooms = new ArrayList<ChatServerChatRoom>();
         users = new TreeMap();
-        
+
         //TODO read in files
         //this is temporary
         mainRoom = new ChatServerChatRoom("Main", 0);
         chatRooms.add(mainRoom); //0 index is main lobby
     }
-    
+
     public void quit(){ //called when closing server down so data is saved to persistent stores
-        
+
     }
 
     public boolean addChatRoom(String name, String greeting){
@@ -96,32 +94,32 @@ public class ChatServerMain{
         chatRooms.add(room);
         return true;
     }
-    
-  /*  private boolean addUser(String name, String password, boolean admin){
-        if (users.contains(name)) return false;
-        users.put(name, new UserAccount(name, password, users.size(), admin));
-        return true;
+
+    /*  private boolean addUser(String name, String password, boolean admin){
+    if (users.contains(name)) return false;
+    users.put(name, new UserAccount(name, password, users.size(), admin));
+    return true;
     } */
-    
+
     public boolean banUser(String name){ //ban a user by name
         UserAccount user = users.get(name.toLowerCase()); if (user==null) return false;
         user.setIsBanned(true);
         disconnectUser(user);
         return true;
     }
-    
+
     public boolean unbanUser(String name){ //unban a user by name
         UserAccount user = users.get(name.toLowerCase()); if (user==null) return false;
         user.setIsBanned(false);
         return false;
     }
-    
+
     public boolean disconnectUser(UserAccount account){
         ChatServerThread thread = account.getThread();
         if (thread==null) return false;
         thread.forceDisconnect(); return true;
     }
-    
+
     public boolean changeUserName(String oldName, String newName){
         if (users.get(newName.toLowerCase())!=null) return false;
         UserAccount account = users.remove(oldName.toLowerCase());
@@ -129,12 +127,12 @@ public class ChatServerMain{
         users.put(newName.toLowerCase(), account);
         return true;
     }
-    
+
     public boolean tellUser(String sender, String target, String message){
         UserAccount user = users.get(target.toLowerCase());
         ChatServerThread thread = user.getThread();
         if (thread==null) return false;
         thread.tell(sender, message);
         return true;
-       }
+    }
 }
