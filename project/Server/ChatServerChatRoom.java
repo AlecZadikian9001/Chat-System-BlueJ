@@ -55,6 +55,16 @@ public class ChatServerChatRoom {
             if (thread!=null && thread.isLoggedIn() && !thread.getUserName().equalsIgnoreCase(name)) thread.tell(name, message);
         }
     }
+    /*
+    public void shutDown(){ //called when server is stopping, should kick all the users
+        for (ChatServerThread thread : threads){
+            thread.disconnect("Server is shutting down.");
+        }
+    }
+    */
+    public void close(){ //called when room is closing, should kick all users into the lobby
+        //TODO
+    }
 
     /*  public boolean changeUserName(String name, int id){
     for (ChatServerThread thread : threads){

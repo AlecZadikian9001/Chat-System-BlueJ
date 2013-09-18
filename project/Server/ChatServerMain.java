@@ -11,13 +11,19 @@ public class ChatServerMain{
     private ArrayList<ChatServerChatRoom> chatRooms;
 
     //the main lobby
-    ChatServerChatRoom mainRoom;
+    private ChatServerChatRoom mainRoom;
+    
+    /* This is the server socket to accept connections */
+        private ServerSocket serverSocket;
+    
+    private boolean isRunning; //is the server up?
 
     public static void main (String[] args){
         ChatServerMain main = new ChatServerMain(args);
     }
 
     public ChatServerMain(String [] args) {
+        isRunning = true;
         databaseSetup();
 
         /* Check port exists */
@@ -25,9 +31,6 @@ public class ChatServerMain{
             System.out.println("Usage: ChatServerMain <port>");
             System.exit(1);
         }
-
-        /* This is the server socket to accept connections */
-        ServerSocket serverSocket = null;
 
         /* Create the server socket */
         try {
@@ -39,7 +42,7 @@ public class ChatServerMain{
         }
         System.out.println("1");
         /* In the main thread, continuously listen for new clients and spin off threads for them. */
-        while (true) {
+        while (isRunning) {
             try {
                 System.out.println("2");
                 /* Get a new client */
@@ -52,9 +55,11 @@ public class ChatServerMain{
                 //clientThread.start();
             } catch (IOException e) {
                 System.out.println("Accept failed: " + e);
+                System.out.println("Server has stopped running.");
                 System.exit(1);
             }
         }
+        System.out.println("Server has stopped running.");
     }
 
     public UserAccount handleLogin(String name, String password){ //returns null if error
@@ -78,6 +83,9 @@ public class ChatServerMain{
         chatRooms = new ArrayList<ChatServerChatRoom>();
         users = new TreeMap();
         load();
+        double randomPassword = Math.random();
+        users.put("admin", new UserAccount("Admin", ""+randomPassword, 0, true)); //the default admin user
+        System.out.println("Admin login is the username \"Admin\" and the password \""+randomPassword+"\" without quotes.");
         mainRoom = new ChatServerChatRoom("Main", 0); //TEMPORARY
         chatRooms.add(mainRoom); //0 index is main lobby
     }
@@ -85,6 +93,14 @@ public class ChatServerMain{
     public void quit(){ //called when closing server down so data is saved to persistent stores
         System.out.println("Shutting down server...");
         save();
+        System.exit(0);
+   //     for (ChatServerChatRoom chatRoom : chatRooms){ //close all the chat rooms
+   //         chatRoom.shutDown();
+   //     }
+   //     save();
+   //     try{
+   //     serverSocket.close(); //closes the socket
+   // } catch (Exception e){ System.out.println(e); isRunning = false; /*the final blow, if needed*/ }
     }
 
     private void save(){
@@ -100,6 +116,7 @@ public class ChatServerMain{
                     new OutputStreamWriter(output, "UTF-8")));
         } catch (Exception e) { System.out.println(e); }
         for (String name : users.keySet()){ //saving each user account into
+            if (!name.equalsIgnoreCase("Admin")){ //don't want to save the default admin account
             System.out.println("Saving user to key "+name);
             out.println(name); //name key to open
             out.println("{");  //then open bracket for holding the attributes
@@ -110,6 +127,7 @@ public class ChatServerMain{
             if (user.getIsAdmin()) out.println("1"); else out.println("0"); //admin status: 1 for true, 0 for false
             if (user.getIsBanned()) out.println("1"); else out.println("0"); //ban status: 1 for true, 0 for false
             out.println("}");  //close the user entry
+        }
         }
         out.flush();
         out.close();

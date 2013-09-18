@@ -119,8 +119,9 @@ public class ChatServerThread extends Thread {
                             if (scanner.hasNext()) message = scanner.next();
                             disconnect(message);
                         }
-                        else if (firstWord.equalsIgnoreCase("/stop")){ //to close the server... SHOULD BE ADMIN ONLY
-                            chatServer.quit();
+                        else if (firstWord.equalsIgnoreCase("/stop")){ //to close the server, ADMIN ONLY
+                            if (user.getIsAdmin()) chatServer.quit();
+                            else send("You do not have permission to use this command.");
                         }
                         /*      else if (firstWord.equalsIgnoreCase("/changeroom")){
                         if (!scanner.hasNext()) send("You must specify a room name.");
