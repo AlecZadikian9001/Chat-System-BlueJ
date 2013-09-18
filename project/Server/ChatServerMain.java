@@ -73,19 +73,78 @@ public class ChatServerMain{
         return account;
     }
 
-    public void databaseSetup(){ //import data from persistent stores
+    private void databaseSetup(){ //import data from persistent stores
         //Initialize chat rooms
         chatRooms = new ArrayList<ChatServerChatRoom>();
         users = new TreeMap();
-
-        //TODO read in files
-        //this is temporary
-        mainRoom = new ChatServerChatRoom("Main", 0);
+        load();
+        mainRoom = new ChatServerChatRoom("Main", 0); //TEMPORARY
         chatRooms.add(mainRoom); //0 index is main lobby
     }
 
     public void quit(){ //called when closing server down so data is saved to persistent stores
+        System.out.println("Shutting down server...");
+        save();
+    }
 
+    private void save(){
+        System.out.println("Saving files...");
+        PrintWriter out = null;
+        try{
+            File file = new File("users.txt");
+            file.createNewFile();
+            FileOutputStream output = new FileOutputStream(file.getPath());
+            System.out.println("FileOutputStream path set to "+file.getPath());
+            out = new PrintWriter(
+                new BufferedWriter(
+                    new OutputStreamWriter(output, "UTF-8")));
+        } catch (Exception e) { System.out.println(e); }
+        for (String name : users.keySet()){ //saving each user account into
+            System.out.println("Saving user to key "+name);
+            out.println(name); //name key to open
+            out.println("{");  //then open bracket for holding the attributes
+            UserAccount user = users.get(name); //getting the account...
+            out.println(user.getName()); //name first
+            out.println(""+user.getID()); //then id
+            out.println(user.getPassword()); //then password
+            if (user.getIsAdmin()) out.println("1"); else out.println("0"); //admin status: 1 for true, 0 for false
+            if (user.getIsBanned()) out.println("1"); else out.println("0"); //ban status: 1 for true, 0 for false
+            out.println("}");  //close the user entry
+        }
+        out.flush();
+        out.close();
+    }
+
+    private boolean load(){ //returns true if loaded, false if new files created
+        System.out.println("Loading files...");
+        FileInputStream input = null;
+        try{
+            File file = new File("users.txt");
+            if(!file.exists()){
+                file.createNewFile();
+                return false;
+            }
+            input = new FileInputStream(file.getPath());
+        } catch (Exception e) { System.out.println(e); }
+        Scanner scanner = new Scanner(input);
+        //variables used for each user, pre-defined to prevent unneeded garbage collection
+        String nameKey, name, password, boolCheck; int id; boolean isAdmin, isBanned;
+        while (scanner.hasNextLine()){
+            nameKey = scanner.nextLine();
+            scanner.nextLine(); //opening bracket is skipped
+            name = scanner.nextLine();
+            id = Integer.parseInt(scanner.nextLine());
+            password = scanner.nextLine();
+            boolCheck = scanner.nextLine();
+            isAdmin = (boolCheck.equals("1"));
+            boolCheck = scanner.nextLine();
+            isBanned = (boolCheck.equals("1"));
+            scanner.nextLine(); //closing bracket is skipped
+            //now to make the user...
+            users.put(nameKey, new UserAccount(name, password, id, isAdmin, isBanned));
+            System.out.println("Loaded user for key "+nameKey);
+        }
+        return true;
     }
 
     public boolean addChatRoom(String name, String greeting){
