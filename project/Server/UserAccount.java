@@ -9,9 +9,14 @@ public class UserAccount
     private boolean isBanned; //if the user is banned from joining
     private ChatServerThread thread; //the thread this user is using
 
-    public UserAccount(String n, String pw, int i, boolean admin)
+    public UserAccount(String n, String pw, int i, boolean admin) //called when new account created
     {
         name = n; password = pw; id = i; isAdmin = admin; isBanned = false;
+    }
+    
+    public UserAccount(String n, String pw, int i, boolean admin, boolean banned) //called when account loaded from file
+    {
+        name = n; password = pw; id = i; isAdmin = admin; isBanned = banned;
     }
     
     public String getName(){ return name; }
