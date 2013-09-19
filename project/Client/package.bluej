@@ -10,8 +10,13 @@ dependency3.to=AudioClient
 dependency3.type=UsesDependency
 package.editor.height=342
 package.editor.width=618
+<<<<<<< HEAD
 package.editor.x=70
 package.editor.y=277
+=======
+package.editor.x=222
+package.editor.y=193
+>>>>>>> 28baefcc9dc0701132be8a84c09ff0e04b061891
 package.numDependencies=3
 package.numTargets=4
 package.showExtends=true
@@ -33,6 +38,7 @@ target2.editor.x=87
 target2.editor.y=22
 target2.height=50
 target2.name=In
+target2.naviview.expanded=true
 target2.showInterface=false
 target2.type=ClassTarget
 target2.width=80
@@ -51,8 +57,8 @@ target3.x=10
 target3.y=190
 target4.editor.height=733
 target4.editor.width=1280
-target4.editor.x=298
-target4.editor.y=105
+target4.editor.x=261
+target4.editor.y=22
 target4.height=50
 target4.name=ChatClient
 target4.showInterface=false

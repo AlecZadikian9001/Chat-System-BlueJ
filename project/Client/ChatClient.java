@@ -2,18 +2,13 @@ package Client;
 import Common.Encryptor;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import java.net.Socket;
+import javax.swing.*;
 
 public class ChatClient extends JFrame implements ActionListener {
-	private String name;
-	private String pass;
-	private boolean encrypted;
+    private String name;
+    private String pass;
+    private boolean encrypted;
 
     
     private JTextArea  enteredText = new JTextArea(10, 32);
@@ -29,8 +24,10 @@ public class ChatClient extends JFrame implements ActionListener {
     private Out out;
     private In in;
 
-    public ChatClient(String hostName, String port) {
-
+    public ChatClient(String hostName, String port) 
+    {
+        System.setProperty("Apple.laf.usedScreenMenuBar", "true");
+        
         // connect to server
         try {
             socket = new Socket(hostName, Integer.parseInt(port));
@@ -46,9 +43,9 @@ public class ChatClient extends JFrame implements ActionListener {
                     out.close();
                     
                     
-//                    in.close();
-//                    try                   { socket.close();        }
-//                    catch (Exception ioe) { ioe.printStackTrace(); }
+                   // in.close();
+                    //try                   { socket.close();        }
+                    //catch (Exception ioe) { ioe.printStackTrace(); }
                 }
             }
         );
@@ -75,6 +72,17 @@ public class ChatClient extends JFrame implements ActionListener {
         Container content = getContentPane();
         content.add(new JScrollPane(enteredText), BorderLayout.CENTER);
         content.add(typedText, BorderLayout.SOUTH);
+        JMenuBar menubar = new JMenuBar();
+        JMenu menu = new JMenu();
+        JMenuItem leave = new JMenuItem("Exit chat room");
+        leave.addActionListener(this);
+        menubar.setVisible(true);
+        this.setJMenuBar(menubar);
+        // menubar.validate();
+        //content.add(menubar);
+        content.validate();
+        //content.add(menubar);
+        
         
         // to encrypt, use /encrypt & encryption class
         //put button 
@@ -88,9 +96,16 @@ public class ChatClient extends JFrame implements ActionListener {
 
     }
 
+    
+    
     // process TextField after user hits Enter
     public void actionPerformed(ActionEvent e) 
     {
+        if (e.getSource() instanceof JMenuItem)
+        {
+            
+        }
+        //else if (// YADA YADA YADA PUT A BUNCH OF IFS REGARDING GETSOURCE 
         String outy = typedText.getText();
         out.println(outy);
         typedText.setText("");
@@ -102,21 +117,32 @@ public class ChatClient extends JFrame implements ActionListener {
     public void listen() 
     {
         String s;
-        while ((s = in.readLine()) != null) {
-            if (s.equals("/accept")){
-                try{
+        while ((s = in.readLine()) != null) 
+        {
+            if (s.equals("/accept"))
+            {
+                try
+                {
                     System.out.println("Client making new audio chat socket on port: "+socket.getPort()+1);
-                if (client==null){ client = new AudioClient(new Socket(socket.getInetAddress(), socket.getPort()+1)); client.start(); }
-                else System.out.println("Duplicate audio chat clients attempted...?");
-            } catch (Exception e){ e.printStackTrace(); }
+                if (client==null)
+                { client = new AudioClient(new Socket(socket.getInetAddress(), socket.getPort()+1)); client.start(); }
+                
+                else 
+                    System.out.println("Duplicate audio chat clients attempted...?");
+                } catch (Exception e){ e.printStackTrace(); }
             }
-            else if (s.equals("/decline")){
+            
+            else if (s.equals("/decline"))
+            {
                 if (client!=null){ client.stopRunning(); client = null; }
             }
-            else{
+            
+            else
+            {
             enteredText.insert(s + "\n", enteredText.getText().length());
-            enteredText.setCaretPosition(enteredText.getText().length());
-        }
+            enteredText.setCaretPosition(enteredText.getText().length());   
+            
+            }
         }
         out.close();
         in.close();

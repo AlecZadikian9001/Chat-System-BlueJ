@@ -1,8 +1,13 @@
 #BlueJ package file
 package.editor.height=400
 package.editor.width=560
+<<<<<<< HEAD
 package.editor.x=618
 package.editor.y=239
+=======
+package.editor.x=267
+package.editor.y=538
+>>>>>>> 28baefcc9dc0701132be8a84c09ff0e04b061891
 package.numDependencies=0
 package.numTargets=3
 package.showExtends=true
