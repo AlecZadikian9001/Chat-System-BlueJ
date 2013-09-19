@@ -17,11 +17,11 @@ public class ChatServerThread extends Thread {
     private ChatServerChatRoom chatRoom;
     //server this belongs to
     private ChatServerMain chatServer;
+    
+    private String pendingAudioChat; //if there is a pending request
 
     //id specific to room
     private int id;
-    
-    private boolean pendingAudioChatRequest; //pending request?
 
     public static final boolean ENCRYPTED = true; //encryption enabled? false for server debug
 
@@ -54,12 +54,12 @@ public class ChatServerThread extends Thread {
         }
     }
 
-    private void send(String a){
+    public void send(String a){
         if (ENCRYPTED) a = Encryptor.encrypt(a, 5); //encrypt it 5 times
         this.out.println(a);
     }
 
-    private String receive(){
+    public String receive(){
         try{
             if (ENCRYPTED) return Encryptor.decrypt(this.in.readLine(), 5); //decrypt it 5 times
             else return this.in.readLine();
@@ -125,23 +125,24 @@ public class ChatServerThread extends Thread {
                             if (user.getIsAdmin()) chatServer.quit();
                             else send("You do not have permission to use this command.");
                         }
-                        if (firstWord.equalsIgnoreCase("/audio")){ //to start an audio chat with someone
+                        else if (firstWord.equalsIgnoreCase("/audio")){ //to start an audio chat with someone
                             if (!scanner.hasNext()) send("You must specify the target's name.");
                             String target = scanner.next();
                             System.out.println("User "+user.getName()+" starting audio chat with "+target+".");
-                            if (!chatServer.audioChat(user.getName(), target)) send("User not online.");
+                            if (!chatServer.audioChat(user.getName(), target)) send("Unable to start audio chat with user.");
                             else{
-                                send("Starting audio chat. You can end it at any time with /decline.");
+                                send("Sent audio chat request. You can end it at any time with /decline.");
                                 send("/accept"); //client interprets this and makes a chat thread in this case
                             }
                         }
-                        if (firstWord.equalsIgnoreCase("/accept")){
-                            if (pendingAudioChatRequest) send("/accept");
-                            else send("No pending audio chat request.");
+                        else if (firstWord.equalsIgnoreCase("/accept")){
+                            Scanner tempScanner = new Scanner(pendingAudioChat); String sender = tempScanner.next(); String target = tempScanner.next();
+                            System.out.println("User "+target+" accepted audio chat with "+sender+".");
+                            if (chatServer.audioChat(sender, target)){ send("/accept"); System.out.println("User "+user.getName()+" accepted audio chat."); }
+                            else send("Unable to accept request or no request availalbe.");
                         }
-                        if (firstWord.equalsIgnoreCase("/decline")){
-                            if (pendingAudioChatRequest) pendingAudioChatRequest = false;
-                            else send("No pending audio chat request.");
+                        else if (firstWord.equalsIgnoreCase("/decline")){
+                            chatServer.endAudioChat(pendingAudioChat); pendingAudioChat = null;
                         }
                         /*      else if (firstWord.equalsIgnoreCase("/changeroom")){
                         if (!scanner.hasNext()) send("You must specify a room name.");
@@ -187,8 +188,10 @@ public class ChatServerThread extends Thread {
         send(user+": "+message);
     }
     
-    public void audioChat(String user){
+    public boolean audioChat(String user){
+        if (pendingAudioChat!=null) return false;
         tell(user, "I've invited you to an audio chat. Type /accept to accept or /decline to decline. If you accept, you can still exit at any time with /decline.");
-        pendingAudioChatRequest = true;
+        pendingAudioChat = (""+user+" "+this.user.getName());
+        return true;
     }
 }

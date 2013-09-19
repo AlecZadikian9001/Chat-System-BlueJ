@@ -44,7 +44,7 @@ public class AudioClient extends Thread //sending data to server socket
         playbackInfo = new DataLine.Info(SourceDataLine.class, format);
         //bufferSize = (int) format.getSampleRate() * format.getFrameSize();
         buffer = new byte[Finals.BUFFER_SIZE];
-        Thread t = new Thread(this); t.start();
+        //Thread t = new Thread(this); t.start();
     }
 
     public void run(){

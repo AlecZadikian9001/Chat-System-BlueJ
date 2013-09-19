@@ -13,28 +13,27 @@ public class ChatServerMain{
     //the main lobby
     private ChatServerChatRoom mainRoom;
     
+    private TreeMap<String, AudioThread> audioRooms; //key string is the initiator and guest separated by space character
+    
     /* This is the server socket to accept connections */
-        private ServerSocket serverSocket;
+    private ServerSocket serverSocket;
+    private int port; //port number we are listening on
     
     private boolean isRunning; //is the server up?
 
     public static void main (String[] args){
-        ChatServerMain main = new ChatServerMain(args);
+        ChatServerMain main = new ChatServerMain(Integer.parseInt(args[0]));
     }
 
-    public ChatServerMain(String [] args) {
+    public ChatServerMain(int portNumber) {
         isRunning = true;
+        audioRooms = new TreeMap<String, AudioThread>();
         databaseSetup();
-
-        /* Check port exists */
-        if (args.length < 1) {
-            System.out.println("Usage: ChatServerMain <port>");
-            System.exit(1);
-        }
 
         /* Create the server socket */
         try {
-            serverSocket = new ServerSocket(Integer.parseInt(args[0]));
+            port = portNumber;
+            serverSocket = new ServerSocket(portNumber);
             System.out.println(serverSocket); //debug
         } catch (IOException e) {
             System.out.println("IOException: " + e);
@@ -214,13 +213,24 @@ public class ChatServerMain{
     }
     
     public boolean audioChat(String sender, String target){
+        AudioThread thread = audioRooms.get(""+sender+" "+target);
+        if (thread!=null) return true;
         UserAccount user = users.get(target.toLowerCase());
-        ChatServerThread thread = user.getThread();
-        if (thread==null) return false;
-        AudioThread audioThread = new AudioThread(9001); //default port 9001 for audio chats
-        /*boolean accepted = */thread.audioChat(sender);
-        //if (!accepted) audioThread.stopRunning();
-        //return accepted;
-        return true;
+        if (user==null) return false;
+        ChatServerThread userThread = user.getThread();
+        if (userThread==null) return false;
+        AudioThread audioThread = new AudioThread(port+1); //default port 9001 for audio chats
+        audioRooms.put(""+sender+" "+target, audioThread);
+        audioThread.start();
+        return userThread.audioChat(sender);
+    }
+    
+    public void endAudioChat(String chat){
+        AudioThread thread = audioRooms.get(chat);
+        if (thread==null) return;
+        Scanner scanner = new Scanner(chat); String sender = scanner.next(); String target = scanner.next();
+        ChatServerThread senderThread = users.get(sender).getThread(); if (senderThread!=null) senderThread.send("/decline"); //to tell the client to stop the chat
+        ChatServerThread targetThread = users.get(sender).getThread(); if (targetThread!=null) targetThread.send("/decline"); //to tell the client to stop the chat
+        thread.stopRunning();
     }
 }

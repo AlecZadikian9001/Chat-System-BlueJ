@@ -105,14 +105,18 @@ public class ChatClient extends JFrame implements ActionListener {
         while ((s = in.readLine()) != null) {
             if (s.equals("/accept")){
                 try{
-                client = new AudioClient(new Socket(socket.getInetAddress(), socket.getPort()+1));
+                    System.out.println("Client making new audio chat socket on port: "+socket.getPort()+1);
+                if (client==null){ client = new AudioClient(new Socket(socket.getInetAddress(), socket.getPort()+1)); client.start(); }
+                else System.out.println("Duplicate audio chat clients attempted...?");
             } catch (Exception e){ e.printStackTrace(); }
             }
             else if (s.equals("/decline")){
                 if (client!=null){ client.stopRunning(); client = null; }
             }
+            else{
             enteredText.insert(s + "\n", enteredText.getText().length());
             enteredText.setCaretPosition(enteredText.getText().length());
+        }
         }
         out.close();
         in.close();
