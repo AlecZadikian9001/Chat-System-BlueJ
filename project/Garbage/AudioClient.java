@@ -19,11 +19,13 @@ public class AudioClient //sending data to server socket
 	byte[] buffer, volBuff;
 	private int bufferSize;
 	
-	private boolean isRunning;
+	private boolean isRunning = true;
 	
 	public static void main(String[] args){
 	    String address = args[0];
 	    int port = Integer.parseInt(args[1]);
+	    try{
+	    new AudioClient(new Socket(address, port)); } catch (Exception e) {}
 	   }
 	
     public AudioClient (Socket socket){ //put in socket with server address
@@ -36,6 +38,7 @@ public class AudioClient //sending data to server socket
 		format = new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
 		DataLine.Info dataLineInfo = new DataLine.Info(TargetDataLine.class, format);
 		bufferSize = (int) format.getSampleRate() * format.getFrameSize();
+		buffer = new byte[bufferSize];
 		
 		targetDataLine = (TargetDataLine)AudioSystem.getLine(dataLineInfo);
 			targetDataLine.open(format, (int)sampleRate);
@@ -49,7 +52,7 @@ public class AudioClient //sending data to server socket
             
             socket.close();
         } catch (Exception e) {
-            System.out.println("AudioOut exception: "+e);
+            e.printStackTrace();
         }
     }
     
