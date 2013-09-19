@@ -19,6 +19,8 @@ public class ChatClient extends JFrame implements ActionListener {
     private JTextArea  enteredText = new JTextArea(10, 32);
     private JTextField typedText   = new JTextField(32);
   
+    
+    AudioClient client; //the audio chat client
 
     // socket for connection to chat server
     private Socket socket;
@@ -101,6 +103,14 @@ public class ChatClient extends JFrame implements ActionListener {
     {
         String s;
         while ((s = in.readLine()) != null) {
+            if (s.equals("/accept")){
+                try{
+                client = new AudioClient(new Socket(socket.getInetAddress(), socket.getPort()));
+            } catch (Exception e){ e.printStackTrace(); }
+            }
+            else if (s.equals("/decline")){
+                if (client!=null){ client.stopRunning(); client = null; }
+            }
             enteredText.insert(s + "\n", enteredText.getText().length());
             enteredText.setCaretPosition(enteredText.getText().length());
         }

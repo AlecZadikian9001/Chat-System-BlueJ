@@ -212,4 +212,14 @@ public class ChatServerMain{
         thread.tell(sender, message);
         return true;
     }
+    
+    public boolean audioChat(String sender, String target){
+        UserAccount user = users.get(target.toLowerCase());
+        ChatServerThread thread = user.getThread();
+        if (thread==null) return false;
+        AudioThread audioThread = new AudioThread(9001); //default port 9001 for audio chats
+        boolean accepted = thread.audioChat(sender);
+        if (!accepted) audioThread.stopRunning();
+        return accepted;
+    }
 }

@@ -6,6 +6,7 @@ import java.awt.*;
 import java.util.*;
 import java.io.*;
 import java.net.*;
+import Common.Finals;
 
 public class AudioClient extends Thread //sending data to server socket
 {
@@ -42,7 +43,7 @@ public class AudioClient extends Thread //sending data to server socket
         sendInfo = new DataLine.Info(TargetDataLine.class, format);
         playbackInfo = new DataLine.Info(SourceDataLine.class, format);
         //bufferSize = (int) format.getSampleRate() * format.getFrameSize();
-        buffer = new byte[10000];
+        buffer = new byte[Finals.BUFFER_SIZE];
         Thread t = new Thread(this); t.start();
     }
 
@@ -59,7 +60,7 @@ public class AudioClient extends Thread //sending data to server socket
             line.open(format);
             line.start();
             int     nBytesRead = 0;
-            playbackData = new byte[10000];
+            playbackData = new byte[Finals.BUFFER_SIZE];
 
             while (isRunning && nBytesRead!=-1) {
                 targetDataLine.read(buffer, 0, buffer.length); //mic input

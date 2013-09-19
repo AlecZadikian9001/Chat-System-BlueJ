@@ -2,6 +2,7 @@ package Server;
 import java.net.*;
 import java.util.*;
 import java.io.*;
+import Common.Finals;
 
 public class AudioThread extends Thread{
 
@@ -41,8 +42,8 @@ public class AudioThread extends Thread{
             //set up I/O
             in1 = clientSocket1.getInputStream(); in2 = clientSocket2.getInputStream();
             out1 = clientSocket1.getOutputStream(); out2 = clientSocket2.getOutputStream();
-            client1Data = new byte[10000];
-            client2Data = new byte[10000];
+            client1Data = new byte[Finals.BUFFER_SIZE];
+            client2Data = new byte[Finals.BUFFER_SIZE];
 
             int client1BytesRead;
             int client2BytesRead;

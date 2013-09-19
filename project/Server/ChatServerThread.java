@@ -123,6 +123,16 @@ public class ChatServerThread extends Thread {
                             if (user.getIsAdmin()) chatServer.quit();
                             else send("You do not have permission to use this command.");
                         }
+                        if (firstWord.equalsIgnoreCase("/audio")){ //to start an audio chat with someone
+                            if (!scanner.hasNext()) send("You must specify the target's name.");
+                            String target = scanner.next();
+                            System.out.println("User "+user.getName()+" starting audio chat with "+target+".");
+                            if (!chatServer.audioChat(user.getName(), target)) send("User not online or denied request.");
+                            else{
+                                send("Starting audio chat. You can end it at any time with /decline.");
+                                send("/accept"); //client interprets this and makes a chat thread in this case
+                            }
+                        }
                         /*      else if (firstWord.equalsIgnoreCase("/changeroom")){
                         if (!scanner.hasNext()) send("You must specify a room name.");
                         else if (!chatServer.changeRoom(scanner.next(), user.getName())) send("Invalid room name specified. ");   TODO
@@ -165,5 +175,17 @@ public class ChatServerThread extends Thread {
     public void tell(String user, String message){
         if (message==null || message.length()<=0) return;
         send(user+": "+message);
+    }
+    
+    public boolean audioChat(String user){
+        tell(user, "I've invited you to an audio chat. Type /accept to accept or /decline to decline. If you accept, you can still exit at any time with /decline.");
+        String response = receive();
+        if (response.equalsIgnoreCase("/accept")){
+            send("/accept"); //client interprets this and makes a chat thread in this case
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }
