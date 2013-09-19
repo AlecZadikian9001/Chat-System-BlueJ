@@ -24,8 +24,10 @@ public class ChatClient extends JFrame implements ActionListener {
     private Out out;
     private In in;
 
-    public ChatClient(String hostName, String port) {
-
+    public ChatClient(String hostName, String port) 
+    {
+        System.setProperty("Apple.laf.usedScreenMenuBar", "true");
+        
         // connect to server
         try {
             socket = new Socket(hostName, Integer.parseInt(port));
@@ -41,9 +43,9 @@ public class ChatClient extends JFrame implements ActionListener {
                     out.close();
                     
                     
-//                    in.close();
-//                    try                   { socket.close();        }
-//                    catch (Exception ioe) { ioe.printStackTrace(); }
+                   // in.close();
+                    //try                   { socket.close();        }
+                    //catch (Exception ioe) { ioe.printStackTrace(); }
                 }
             }
         );
@@ -74,6 +76,12 @@ public class ChatClient extends JFrame implements ActionListener {
         JMenu menu = new JMenu();
         JMenuItem leave = new JMenuItem("Exit chat room");
         leave.addActionListener(this);
+        menubar.setVisible(true);
+        this.setJMenuBar(menubar);
+        // menubar.validate();
+        //content.add(menubar);
+        content.validate();
+        //content.add(menubar);
         
         
         // to encrypt, use /encrypt & encryption class
