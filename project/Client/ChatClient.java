@@ -105,7 +105,7 @@ public class ChatClient extends JFrame implements ActionListener {
         while ((s = in.readLine()) != null) {
             if (s.equals("/accept")){
                 try{
-                client = new AudioClient(new Socket(socket.getInetAddress(), socket.getPort()));
+                client = new AudioClient(new Socket(socket.getInetAddress(), socket.getPort()+1));
             } catch (Exception e){ e.printStackTrace(); }
             }
             else if (s.equals("/decline")){

@@ -19,7 +19,9 @@ public class ChatServerThread extends Thread {
     private ChatServerMain chatServer;
 
     //id specific to room
-    int id;
+    private int id;
+    
+    private boolean pendingAudioChatRequest; //pending request?
 
     public static final boolean ENCRYPTED = true; //encryption enabled? false for server debug
 
@@ -127,11 +129,19 @@ public class ChatServerThread extends Thread {
                             if (!scanner.hasNext()) send("You must specify the target's name.");
                             String target = scanner.next();
                             System.out.println("User "+user.getName()+" starting audio chat with "+target+".");
-                            if (!chatServer.audioChat(user.getName(), target)) send("User not online or denied request.");
+                            if (!chatServer.audioChat(user.getName(), target)) send("User not online.");
                             else{
                                 send("Starting audio chat. You can end it at any time with /decline.");
                                 send("/accept"); //client interprets this and makes a chat thread in this case
                             }
+                        }
+                        if (firstWord.equalsIgnoreCase("/accept")){
+                            if (pendingAudioChatRequest) send("/accept");
+                            else send("No pending audio chat request.");
+                        }
+                        if (firstWord.equalsIgnoreCase("/decline")){
+                            if (pendingAudioChatRequest) pendingAudioChatRequest = false;
+                            else send("No pending audio chat request.");
                         }
                         /*      else if (firstWord.equalsIgnoreCase("/changeroom")){
                         if (!scanner.hasNext()) send("You must specify a room name.");
@@ -177,15 +187,8 @@ public class ChatServerThread extends Thread {
         send(user+": "+message);
     }
     
-    public boolean audioChat(String user){
+    public void audioChat(String user){
         tell(user, "I've invited you to an audio chat. Type /accept to accept or /decline to decline. If you accept, you can still exit at any time with /decline.");
-        String response = receive();
-        if (response.equalsIgnoreCase("/accept")){
-            send("/accept"); //client interprets this and makes a chat thread in this case
-            return true;
-        }
-        else{
-            return false;
-        }
+        pendingAudioChatRequest = true;
     }
 }

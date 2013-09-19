@@ -218,8 +218,9 @@ public class ChatServerMain{
         ChatServerThread thread = user.getThread();
         if (thread==null) return false;
         AudioThread audioThread = new AudioThread(9001); //default port 9001 for audio chats
-        boolean accepted = thread.audioChat(sender);
-        if (!accepted) audioThread.stopRunning();
-        return accepted;
+        /*boolean accepted = */thread.audioChat(sender);
+        //if (!accepted) audioThread.stopRunning();
+        //return accepted;
+        return true;
     }
 }
