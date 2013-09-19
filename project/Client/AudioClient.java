@@ -70,9 +70,7 @@ public class AudioClient extends Thread //sending data to server socket
                 out.write(buffer); //send sound
                 //receive and output sound:
                 nBytesRead = in.read(playbackData, 0, playbackData.length);
-                if (nBytesRead >=0){
-                     line.write(playbackData,  0, nBytesRead);
-                }
+                line.write(playbackData,  0, nBytesRead);
             }
             
             line.drain();
