@@ -8,7 +8,7 @@ public class ChatServerMain{
     private TreeMap<String, UserAccount> users;
 
     //the database of all chat rooms, synced with a persistent store
-    private ArrayList<ChatServerChatRoom> chatRooms;
+    private TreeMap<String, ChatServerChatRoom> chatRooms;
 
     //the main lobby
     private ChatServerChatRoom mainRoom;
@@ -39,11 +39,9 @@ public class ChatServerMain{
             System.out.println("IOException: " + e);
             System.exit(1);
         }
-        System.out.println("1");
         /* In the main thread, continuously listen for new clients and spin off threads for them. */
         while (isRunning) {
             try {
-                System.out.println("2");
                 /* Get a new client */
                 Socket clientSocket = serverSocket.accept();
                 System.out.println("New connection from "+clientSocket.getInetAddress().toString());
@@ -79,14 +77,14 @@ public class ChatServerMain{
 
     private void databaseSetup(){ //import data from persistent stores
         //Initialize chat rooms
-        chatRooms = new ArrayList<ChatServerChatRoom>();
+        chatRooms = new TreeMap<String, ChatServerChatRoom>();
         users = new TreeMap();
         load();
         double randomPassword = Math.random();
         users.put("admin", new UserAccount("Admin", ""+randomPassword, 0, true)); //the default admin user
         System.out.println("Admin login is the username \"Admin\" and the password \""+randomPassword+"\" without quotes.");
         mainRoom = new ChatServerChatRoom("Main", 0); //TEMPORARY
-        chatRooms.add(mainRoom); //0 index is main lobby
+        chatRooms.put("main", mainRoom); //0 index is main lobby
     }
 
     public void quit(){ //called when closing server down so data is saved to persistent stores
@@ -165,9 +163,19 @@ public class ChatServerMain{
     }
 
     public boolean addChatRoom(String name, String greeting){
-        for (ChatServerChatRoom room : chatRooms) if (room.getName().equalsIgnoreCase(name)) return false;
+if (chatRooms.get(name.toLowerCase())!=null) return false;
         ChatServerChatRoom room = new ChatServerChatRoom(name, chatRooms.size());
-        chatRooms.add(room);
+        chatRooms.put(name.toLowerCase(), room);
+        return true;
+    }
+    
+    public boolean changeChatRoom(String user, String room){
+        UserAccount account = users.get(user);
+        ChatServerChatRoom room2 = chatRooms.get(room);
+        if (account==null || room2 ==null) return false;
+        ChatServerThread thread = account.getThread();
+        if (thread==null) return false;
+        room2.addThread(thread);
         return true;
     }
 

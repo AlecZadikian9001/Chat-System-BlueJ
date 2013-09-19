@@ -1,15 +1,12 @@
 #BlueJ class context
 comment0.params=n\ i
-comment0.target=ChatServerChatRoom(java.lang.String,\ int)
+comment0.target=ChatServerChatRoom(String,\ int)
 comment1.params=thread
 comment1.target=void\ addThread(ChatServerThread)
-comment2.params=
-comment2.target=java.lang.String\ getName()
-comment3.params=
+comment2.target=String\ getName()
 comment3.target=int\ getID()
 comment4.params=name\ message
-comment4.target=void\ tellEveryone(java.lang.String,\ java.lang.String)
-comment5.params=
+comment4.target=void\ tellEveryone(String,\ String)
 comment5.target=void\ close()
-comment5.text=\n\ \ \ \ public\ void\ shutDown(){\ //called\ when\ server\ is\ stopping,\ should\ kick\ all\ the\ users\n\ \ \ \ \ \ \ \ for\ (ChatServerThread\ thread\ \:\ threads){\n\ \ \ \ \ \ \ \ \ \ \ \ thread.disconnect("Server\ is\ shutting\ down.");\n\ \ \ \ \ \ \ \ }\n\ \ \ \ }\n
+comment5.text=public\ void\ shutDown(){\ //called\ when\ server\ is\ stopping,\ should\ kick\ all\ the\ users\nfor\ (ChatServerThread\ thread\ \:\ threads){\nthread.disconnect("Server\ is\ shutting\ down.");\n}\n}\n\n
 numComments=6
