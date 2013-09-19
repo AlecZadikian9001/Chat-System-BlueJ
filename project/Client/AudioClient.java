@@ -9,16 +9,12 @@ import java.net.*;
 
 public class AudioClient extends Thread //sending data to server socket
 {
-    private final static float MAX_8_BITS_SIGNED = Byte.MAX_VALUE;
-    private final static float MAX_8_BITS_UNSIGNED = 0xff;
-    private final static float MAX_16_BITS_SIGNED = Short.MAX_VALUE;
-    private final static float MAX_16_BITS_UNSIGNED = 0xffff;
     private float level, sampleRate;
     private TargetDataLine targetDataLine;
     private AudioFormat format;
     private int bufferSize;
     private DataLine.Info sendInfo, playbackInfo;
-    
+
     private Socket socket;
     private OutputStream out;
     private InputStream in;
@@ -37,7 +33,7 @@ public class AudioClient extends Thread //sending data to server socket
 
     public AudioClient (Socket socket){ //put in socket with server address
         this.socket = socket;
-        sampleRate = 44100;
+        sampleRate = 8000.0F;
         int sampleSizeInBits = 16;
         int channels = 1;
         boolean signed = true;
@@ -45,8 +41,8 @@ public class AudioClient extends Thread //sending data to server socket
         format = new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
         sendInfo = new DataLine.Info(TargetDataLine.class, format);
         playbackInfo = new DataLine.Info(SourceDataLine.class, format);
-        bufferSize = (int) format.getSampleRate() * format.getFrameSize();
-        buffer = new byte[bufferSize];
+        //bufferSize = (int) format.getSampleRate() * format.getFrameSize();
+        buffer = new byte[10000];
         Thread t = new Thread(this); t.start();
     }
 
@@ -60,21 +56,21 @@ public class AudioClient extends Thread //sending data to server socket
             out = socket.getOutputStream();
             in = socket.getInputStream();
             line = (SourceDataLine) AudioSystem.getLine(playbackInfo);
-			line.open(format);
-			line.start();
-			int     nBytesRead = 0;
-			playbackData = new byte[128000];
-			
+            line.open(format);
+            line.start();
+            int     nBytesRead = 0;
+            playbackData = new byte[10000];
+
             while (isRunning && nBytesRead!=-1) {
-                targetDataLine.read(buffer, 0, buffer.length);
+                targetDataLine.read(buffer, 0, buffer.length); //mic input
                 out.write(buffer); //send sound
                 //receive and output sound:
-                nBytesRead = in.read(playbackData, 0, playbackData.length);
-                line.write(playbackData,  0, nBytesRead);
+                nBytesRead = in.read(playbackData, 0, playbackData.length); //receive sound
+                line.write(playbackData,  0, nBytesRead); //speaker output
             }
-            
+
             line.drain();
-		line.close();
+            line.close();
             socket.close();
         } catch (Exception e) {
             e.printStackTrace();
