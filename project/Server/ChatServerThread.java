@@ -35,7 +35,9 @@ public class ChatServerThread extends Thread {
 
     public void setUserName(String n){ user.setName(n); }
 
-    public ChatServerChatRoom getChatRoom(){ return chatRoom; }
+    public ChatServerChatRoom getRoom(){ return chatRoom; }
+    
+    public void setRoom(ChatServerChatRoom room){ chatRoom = room; }
 
     public ChatServerThread(Socket socket, UserAccount account, ChatServerChatRoom  chatRoom, ChatServerMain chatServer){
         user = account;
@@ -144,10 +146,28 @@ public class ChatServerThread extends Thread {
                         else if (firstWord.equalsIgnoreCase("/decline")){
                             chatServer.endAudioChat(pendingAudioChat); pendingAudioChat = null;
                         }
-                        /*      else if (firstWord.equalsIgnoreCase("/changeroom")){
+                        
+                        else if (firstWord.equalsIgnoreCase("/changeroom")){
                         if (!scanner.hasNext()) send("You must specify a room name.");
-                        else if (!chatServer.changeRoom(scanner.next(), user.getName())) send("Invalid room name specified. ");   TODO
-                        } */
+                        else if (!chatServer.changeRoom(user.getName(), scanner.next())) send("Invalid room name specified. "); 
+                        else{
+                            this.tell("Server Message", "You've joined the chat room "+chatRoom.getName()+".");
+        chatRoom.tellEveryone("Server Message", ""+user.getName()+" joined the room.");
+                        }
+                        }
+                        
+                        else if (firstWord.equalsIgnoreCase("/rooms")){
+                            send(chatServer.getRoomNames());
+                        }
+                        
+                        else if (firstWord.equalsIgnoreCase("/addroom")){
+                        if (!user.getIsAdmin()) send("You do not have permission to use this command.");
+                        else{
+                        if (!scanner.hasNext()) send("You must specify a room name.");
+                        else if (!chatServer.addRoom(scanner.next())) send("Invalid room name specified. "); 
+                        else send("New room created.");
+                    }
+                        }
                         else send("Invalid command.");
                         scanner.close();
                     }

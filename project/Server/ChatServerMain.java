@@ -48,7 +48,7 @@ public class ChatServerMain{
                 /* Create a thread for it and start, giving it the right id. */
                 ChatServerThread clientThread = new ChatServerThread(clientSocket, null, mainRoom, this); //null user because the thread has to take the username/password
                 clientThread.start();
-                chatRooms.get(0).addThread(clientThread); //0 index is the main lobby
+                chatRooms.get("main").addThread(clientThread); //0 index is the main lobby
                 //clientThread.start();
             } catch (IOException e) {
                 System.out.println("Accept failed: " + e);
@@ -162,21 +162,36 @@ public class ChatServerMain{
         return true;
     }
 
-    public boolean addChatRoom(String name, String greeting){
+    public boolean addRoom(String name){
 if (chatRooms.get(name.toLowerCase())!=null) return false;
         ChatServerChatRoom room = new ChatServerChatRoom(name, chatRooms.size());
         chatRooms.put(name.toLowerCase(), room);
+        System.out.println("New room added: "+name);
         return true;
     }
     
-    public boolean changeChatRoom(String user, String room){
-        UserAccount account = users.get(user);
+    public boolean changeRoom(String user, String room){
+        UserAccount account = users.get(user.toLowerCase());
         ChatServerChatRoom room2 = chatRooms.get(room);
         if (account==null || room2 ==null) return false;
         ChatServerThread thread = account.getThread();
         if (thread==null) return false;
+        thread.getRoom().removeThread(thread);
         room2.addThread(thread);
+        thread.setRoom(room2);
+        System.out.println(""+user+" changed to room "+room);
         return true;
+    }
+    
+    public String getRoomNames(){
+        Set<String> keys = chatRooms.keySet();
+        StringBuffer ret = new StringBuffer(keys.toString().length()+1);
+        ret.append("[");
+        for (String key : keys){
+            ret.append(""+chatRooms.get(key).getName()+", ");
+        }
+        ret.append("]");
+        return ret.toString();
     }
 
     /*  private boolean addUser(String name, String password, boolean admin){

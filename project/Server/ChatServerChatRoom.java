@@ -25,7 +25,8 @@ public class ChatServerChatRoom {
     public void addThread(ChatServerThread thread){ //replaces the first dead thread with this one, taking its id
         int count = threads.size(); boolean found = false;
         for (int i = 0; i<count; i++){
-            if (!threads.get(i).isAlive()){
+            ChatServerThread thread2 = threads.get(i);
+            if (thread2==null || !thread2.isAlive()){
                 thread.setID(i);
             //    thread.setUserName(""+i);
                 threads.remove(i);
@@ -43,6 +44,12 @@ public class ChatServerChatRoom {
         }
         //thread.tell("Server Message", "You've joined the chat room "+name+".");
         //tellEveryone( "Server Message", ""+thread.getUserName()+" joined the room."); //id -1 reserved for server messages
+    }
+    
+    public void removeThread(ChatServerThread thread){
+        int id = thread.getID();
+        threads.remove(id);
+        threads.add(id, null);
     }
 
     public String getName(){ return name; }

@@ -1,21 +1,12 @@
 #BlueJ package file
 package.editor.height=400
 package.editor.width=560
-<<<<<<< HEAD
-package.editor.x=598
-package.editor.y=219
-=======
 package.editor.x=253
 package.editor.y=27
->>>>>>> 28baefcc9dc0701132be8a84c09ff0e04b061891
 package.numDependencies=0
 package.numTargets=4
 package.showExtends=true
 package.showUses=true
-<<<<<<< HEAD
-=======
-project.charset=x-MacRoman
->>>>>>> 28baefcc9dc0701132be8a84c09ff0e04b061891
 target1.height=62
 target1.name=Garbage
 target1.type=PackageTarget
