@@ -1,7 +1,7 @@
 package Common;
 
 public class Finals{
-public static final int BUFFER_SIZE = 1000; //used in audio chat
+public static final int BUFFER_SIZE = 512; //used in audio chat
 
 
 }

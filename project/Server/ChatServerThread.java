@@ -138,10 +138,13 @@ public class ChatServerThread extends Thread {
                             }
                         }
                         else if (firstWord.equalsIgnoreCase("/accept")){
+                            if (pendingAudioChat==null || pendingAudioChat.length()==0){ send("No pending audio chat request to accept."); }
+                            else{
                             Scanner tempScanner = new Scanner(pendingAudioChat); String sender = tempScanner.next(); String target = tempScanner.next();
                             System.out.println("User "+target+" accepted audio chat with "+sender+".");
                             if (chatServer.audioChat(sender, target)){ send("/accept"); System.out.println("User "+user.getName()+" accepted audio chat."); }
-                            else send("Unable to accept request or no request availalbe.");
+                            else send("No pending audio chat request to accept.");
+                            }
                         }
                         else if (firstWord.equalsIgnoreCase("/decline")){
                             chatServer.endAudioChat(pendingAudioChat); pendingAudioChat = null;
@@ -160,6 +163,10 @@ public class ChatServerThread extends Thread {
                             send(chatServer.getRoomNames());
                         }
                         
+                        else if (firstWord.equalsIgnoreCase("/users")){
+                            send(chatRoom.getUsers());
+                        }
+                        
                         else if (firstWord.equalsIgnoreCase("/addroom")){
                         if (!user.getIsAdmin()) send("You do not have permission to use this command.");
                         else{
@@ -168,6 +175,16 @@ public class ChatServerThread extends Thread {
                         else send("New room created.");
                     }
                         }
+                        
+                        else if (firstWord.equalsIgnoreCase("/removeroom")){
+                        if (!user.getIsAdmin()) send("You do not have permission to use this command.");
+                        else{
+                        if (!scanner.hasNext()) send("You must specify a room name.");
+                        else if (!chatServer.removeRoom(scanner.next())) send("Invalid room name specified. "); 
+                        else send("Room removed.");
+                    }
+                        }
+                        
                         else send("Invalid command.");
                         scanner.close();
                     }

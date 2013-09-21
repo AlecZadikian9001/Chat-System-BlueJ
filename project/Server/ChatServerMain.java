@@ -12,13 +12,13 @@ public class ChatServerMain{
 
     //the main lobby
     private ChatServerChatRoom mainRoom;
-    
+
     private TreeMap<String, AudioThread> audioRooms; //key string is the initiator and guest separated by space character
-    
+
     /* This is the server socket to accept connections */
     private ServerSocket serverSocket;
     private int port; //port number we are listening on
-    
+
     private boolean isRunning; //is the server up?
 
     public static void main (String[] args){
@@ -91,13 +91,13 @@ public class ChatServerMain{
         System.out.println("Shutting down server...");
         save();
         System.exit(0);
-   //     for (ChatServerChatRoom chatRoom : chatRooms){ //close all the chat rooms
-   //         chatRoom.shutDown();
-   //     }
-   //     save();
-   //     try{
-   //     serverSocket.close(); //closes the socket
-   // } catch (Exception e){ System.out.println(e); isRunning = false; /*the final blow, if needed*/ }
+        //     for (ChatServerChatRoom chatRoom : chatRooms){ //close all the chat rooms
+        //         chatRoom.shutDown();
+        //     }
+        //     save();
+        //     try{
+        //     serverSocket.close(); //closes the socket
+        // } catch (Exception e){ System.out.println(e); isRunning = false; /*the final blow, if needed*/ }
     }
 
     private void save(){
@@ -114,21 +114,40 @@ public class ChatServerMain{
         } catch (Exception e) { System.out.println(e); }
         for (String name : users.keySet()){ //saving each user account into
             if (!name.equalsIgnoreCase("Admin")){ //don't want to save the default admin account
-            System.out.println("Saving user to key "+name);
+                System.out.println("Saving user to key "+name);
+                out.println(name); //name key to open
+                out.println("{");  //then open bracket for holding the attributes
+                UserAccount user = users.get(name); //getting the account...
+                out.println(user.getName()); //name first
+                out.println(""+user.getID()); //then id
+                out.println(user.getPassword()); //then password
+                if (user.getIsAdmin()) out.println("1"); else out.println("0"); //admin status: 1 for true, 0 for false
+                if (user.getIsBanned()) out.println("1"); else out.println("0"); //ban status: 1 for true, 0 for false
+                out.println("}");  //close the user entry
+            }
+        }
+        try{
+            File file = new File("rooms.txt");
+            file.createNewFile();
+            FileOutputStream output = new FileOutputStream(file.getPath());
+            System.out.println("FileOutputStream path set to "+file.getPath());
+            out = new PrintWriter(
+                new BufferedWriter(
+                    new OutputStreamWriter(output, "UTF-8")));
+        } catch (Exception e) { System.out.println(e); }
+        for (String name : chatRooms.keySet()){ //saving each chat room info
+            System.out.println("Saving room to key "+name);
             out.println(name); //name key to open
             out.println("{");  //then open bracket for holding the attributes
-            UserAccount user = users.get(name); //getting the account...
-            out.println(user.getName()); //name first
-            out.println(""+user.getID()); //then id
-            out.println(user.getPassword()); //then password
-            if (user.getIsAdmin()) out.println("1"); else out.println("0"); //admin status: 1 for true, 0 for false
-            if (user.getIsBanned()) out.println("1"); else out.println("0"); //ban status: 1 for true, 0 for false
+            ChatServerChatRoom room = chatRooms.get(name);
+            out.println(room.getName()); //name first
+            out.println(""+room.getID()); //then id
             out.println("}");  //close the user entry
-        }
         }
         out.flush();
         out.close();
     }
+
 
     private boolean load(){ //returns true if loaded, false if new files created
         System.out.println("Loading files...");
@@ -159,17 +178,50 @@ public class ChatServerMain{
             users.put(nameKey, new UserAccount(name, password, id, isAdmin, isBanned));
             System.out.println("Loaded user for key "+nameKey);
         }
+        
+        input = null;
+        try{
+            File file = new File("rooms.txt");
+            if(!file.exists()){
+                file.createNewFile();
+                return false;
+            }
+            input = new FileInputStream(file.getPath());
+        } catch (Exception e) { System.out.println(e); }
+        scanner = new Scanner(input);
+        //variables used for each user, pre-defined to prevent unneeded garbage collection
+        //String nameKey, name; int id;
+        while (scanner.hasNextLine()){
+            nameKey = scanner.nextLine();
+            scanner.nextLine(); //opening bracket is skipped
+            name = scanner.nextLine();
+            id = Integer.parseInt(scanner.nextLine());
+            scanner.nextLine(); //closing bracket is skipped
+            //now to make the user...
+            chatRooms.put(nameKey, new ChatServerChatRoom(name, id));
+            System.out.println("Loaded room for key "+nameKey);
+        }
         return true;
     }
 
     public boolean addRoom(String name){
-if (chatRooms.get(name.toLowerCase())!=null) return false;
+        if (chatRooms.get(name.toLowerCase())!=null) return false;
         ChatServerChatRoom room = new ChatServerChatRoom(name, chatRooms.size());
         chatRooms.put(name.toLowerCase(), room);
         System.out.println("New room added: "+name);
         return true;
     }
     
+    public boolean removeRoom(String name){
+        if (name.equalsIgnoreCase("main")) return false;
+        ChatServerChatRoom room = chatRooms.remove(name.toLowerCase());
+        if (room==null) return false;
+        room.close();
+        //room.dealloc //oh wait no, we can't do that
+        System.out.println("Room killed: "+name);
+        return true;
+    }
+
     public boolean changeRoom(String user, String room){
         UserAccount account = users.get(user.toLowerCase());
         ChatServerChatRoom room2 = chatRooms.get(room);
@@ -182,14 +234,15 @@ if (chatRooms.get(name.toLowerCase())!=null) return false;
         System.out.println(""+user+" changed to room "+room);
         return true;
     }
-    
+
     public String getRoomNames(){
         Set<String> keys = chatRooms.keySet();
-        StringBuffer ret = new StringBuffer(keys.toString().length()+1);
-        ret.append("[");
+        StringBuffer ret = new StringBuffer(keys.toString().length()+11);
+        ret.append("Chat rooms: [");
         for (String key : keys){
             ret.append(""+chatRooms.get(key).getName()+", ");
         }
+        ret.delete(ret.length()-2, ret.length());
         ret.append("]");
         return ret.toString();
     }
@@ -234,10 +287,11 @@ if (chatRooms.get(name.toLowerCase())!=null) return false;
         thread.tell(sender, message);
         return true;
     }
-    
-    public boolean audioChat(String sender, String target){
+
+    public boolean audioChat(String sender, String target){ //this needs to be stress-tested and bug-fixed TODO
+        if (sender.equalsIgnoreCase(target)) return false; //can't do audio chat with yourself!
         AudioThread thread = audioRooms.get(""+sender+" "+target);
-        if (thread!=null) return true;
+        if (thread!=null) return false;
         UserAccount user = users.get(target.toLowerCase());
         if (user==null) return false;
         ChatServerThread userThread = user.getThread();
@@ -247,7 +301,7 @@ if (chatRooms.get(name.toLowerCase())!=null) return false;
         audioThread.start();
         return userThread.audioChat(sender);
     }
-    
+
     public void endAudioChat(String chat){
         AudioThread thread = audioRooms.get(chat);
         if (thread==null) return;

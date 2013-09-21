@@ -49,7 +49,7 @@ public class ChatServerChatRoom {
     public void removeThread(ChatServerThread thread){
         int id = thread.getID();
         threads.remove(id);
-        threads.add(id, null);
+        threads.add(id, null); //to fill the space in the "hash set"
     }
 
     public String getName(){ return name; }
@@ -69,8 +69,22 @@ public class ChatServerChatRoom {
         }
     }
     */
-    public void close(){ //called when room is closing, should kick all users into the lobby
-        //TODO
+    public void close(){ //called when room is closing, should kick all users
+        for (ChatServerThread thread : threads){
+            thread.disconnect("Room is closing.");
+        }
+    }
+    
+    public String getUsers(){
+        StringBuffer ret = new StringBuffer(threads.size()*10+12);
+        ret.append("Users in room: [");
+        for (ChatServerThread thread : threads){
+            if (thread!=null && thread.isAlive())
+            ret.append(""+thread.getUserName()+", ");
+        }
+        ret.delete(ret.length()-2, ret.length());
+        ret.append("]");
+        return ret.toString();
     }
 
     /*  public boolean changeUserName(String name, int id){
