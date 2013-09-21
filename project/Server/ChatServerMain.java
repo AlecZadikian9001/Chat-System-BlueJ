@@ -72,6 +72,7 @@ public class ChatServerMain{
         if (account.getThread()!=null && account.getThread().isAlive()){ //if user is already logged in, and login succeeds
             account.getThread().disconnect("I am now signing in from a different location.");
         }
+        if (account.getIsBanned()) return null;
         return account;
     }
 
@@ -89,8 +90,13 @@ public class ChatServerMain{
 
     public void quit(){ //called when closing server down so data is saved to persistent stores
         System.out.println("Shutting down server...");
-        save();
-        System.exit(0);
+        Object lock = new Object();
+        //synchronized(lock){
+            save();
+        //}
+        //synchronized(lock){
+            System.exit(0);
+        //}
         //     for (ChatServerChatRoom chatRoom : chatRooms){ //close all the chat rooms
         //         chatRoom.shutDown();
         //     }
@@ -126,6 +132,8 @@ public class ChatServerMain{
                 out.println("}");  //close the user entry
             }
         }
+        out.flush();
+        out.close();
         try{
             File file = new File("rooms.txt");
             file.createNewFile();
@@ -136,18 +144,20 @@ public class ChatServerMain{
                     new OutputStreamWriter(output, "UTF-8")));
         } catch (Exception e) { System.out.println(e); }
         for (String name : chatRooms.keySet()){ //saving each chat room info
-            System.out.println("Saving room to key "+name);
-            out.println(name); //name key to open
-            out.println("{");  //then open bracket for holding the attributes
-            ChatServerChatRoom room = chatRooms.get(name);
-            out.println(room.getName()); //name first
-            out.println(""+room.getID()); //then id
-            out.println("}");  //close the user entry
+            if (!name.equalsIgnoreCase("Main")) //don't want to save the default main room
+            {
+                System.out.println("Saving room to key "+name);
+                out.println(name); //name key to open
+                out.println("{");  //then open bracket for holding the attributes
+                ChatServerChatRoom room = chatRooms.get(name);
+                out.println(room.getName()); //name first
+                out.println(""+room.getID()); //then id
+                out.println("}");  //close the user entry
+            }
         }
         out.flush();
         out.close();
     }
-
 
     private boolean load(){ //returns true if loaded, false if new files created
         System.out.println("Loading files...");
@@ -178,7 +188,7 @@ public class ChatServerMain{
             users.put(nameKey, new UserAccount(name, password, id, isAdmin, isBanned));
             System.out.println("Loaded user for key "+nameKey);
         }
-        
+
         input = null;
         try{
             File file = new File("rooms.txt");
@@ -211,7 +221,7 @@ public class ChatServerMain{
         System.out.println("New room added: "+name);
         return true;
     }
-    
+
     public boolean removeRoom(String name){
         if (name.equalsIgnoreCase("main")) return false;
         ChatServerChatRoom room = chatRooms.remove(name.toLowerCase());
@@ -253,7 +263,23 @@ public class ChatServerMain{
     return true;
     } */
 
+    public boolean promoteUser(String name){ //op a user by name
+        UserAccount user = users.get(name.toLowerCase()); if (user==null) return false;
+        user.setIsAdmin(true);
+        if (user.getThread()!=null) user.getThread().send("You are now op!");
+        return true;
+    }
+
+    public boolean demoteUser(String name){ //deop a user by name
+        if (name.equalsIgnoreCase("admin")) return false; //can't demote the admin
+        UserAccount user = users.get(name.toLowerCase()); if (user==null) return false;
+        user.setIsAdmin(false);
+        if (user.getThread()!=null) user.getThread().send("You are no longer op.");
+        return true;
+    }
+
     public boolean banUser(String name){ //ban a user by name
+        if (name.equalsIgnoreCase("admin")) return false; //can't ban the admin
         UserAccount user = users.get(name.toLowerCase()); if (user==null) return false;
         user.setIsBanned(true);
         disconnectUser(user);
@@ -263,7 +289,7 @@ public class ChatServerMain{
     public boolean unbanUser(String name){ //unban a user by name
         UserAccount user = users.get(name.toLowerCase()); if (user==null) return false;
         user.setIsBanned(false);
-        return false;
+        return true;
     }
 
     public boolean disconnectUser(UserAccount account){
@@ -282,8 +308,9 @@ public class ChatServerMain{
 
     public boolean tellUser(String sender, String target, String message){
         UserAccount user = users.get(target.toLowerCase());
+        if (user==null) return false;
         ChatServerThread thread = user.getThread();
-        if (thread==null) return false;
+        if (thread==null || !thread.isAlive()) return false;
         thread.tell(sender, message);
         return true;
     }
@@ -291,15 +318,17 @@ public class ChatServerMain{
     public boolean audioChat(String sender, String target){ //this needs to be stress-tested and bug-fixed TODO
         if (sender.equalsIgnoreCase(target)) return false; //can't do audio chat with yourself!
         AudioThread thread = audioRooms.get(""+sender+" "+target);
-        if (thread!=null) return false;
+        if (thread!=null){ return true; } //if this is an acceptance of a previously sent audio chat
         UserAccount user = users.get(target.toLowerCase());
-        if (user==null) return false;
+        if (user==null) { System.out.println("Audio chat failed: cause 2"); return false; }
         ChatServerThread userThread = user.getThread();
-        if (userThread==null) return false;
+        if (userThread==null){ System.out.println("Audio chat failed: cause 3"); return false; }
         AudioThread audioThread = new AudioThread(port+1); //default port 9001 for audio chats
         audioRooms.put(""+sender+" "+target, audioThread);
         audioThread.start();
-        return userThread.audioChat(sender);
+        boolean ret = userThread.audioChat(sender);
+        if (!ret){ System.out.println("Audio chat failed: cause 4"); return false; }
+        return ret;
     }
 
     public void endAudioChat(String chat){

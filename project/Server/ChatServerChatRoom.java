@@ -79,7 +79,7 @@ public class ChatServerChatRoom {
         StringBuffer ret = new StringBuffer(threads.size()*10+12);
         ret.append("Users in room: [");
         for (ChatServerThread thread : threads){
-            if (thread!=null && thread.isAlive())
+            if (thread!=null && thread.getUserName()!=null && thread.isAlive())
             ret.append(""+thread.getUserName()+", ");
         }
         ret.delete(ret.length()-2, ret.length());
