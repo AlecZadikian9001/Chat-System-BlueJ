@@ -30,6 +30,8 @@ public class ChatServerThread extends Thread {
     public int getID(){ return id; }
 
     public void setID(int a){ id = a; }
+    
+    public boolean getIsAdmin(){ return user.getIsAdmin(); }
 
     public String getUserName(){ if (user!=null) return user.getName(); return null; }
 
@@ -111,6 +113,15 @@ public class ChatServerThread extends Thread {
                             String message = scanner.next();
                             System.out.println("User "+user.getName()+" saying (privately) "+message+" to target "+target+".");
                             if (!chatServer.tellUser(user.getName()+" (privately)", target, message)) send("User not found online.");
+                        }
+                        else if (firstWord.equalsIgnoreCase("/anonymous")){
+                            String message = "";
+                            message = fromClient.substring(10, fromClient.length()); //10 is the length of /anonymous
+                            if (!user.getIsAdmin()){
+                            chatRoom.tellEveryoneNotAdmins("Anonymous User", message);
+                            chatRoom.tellAdmins(""+user.getName()+" (anonymously)", message); //users not anonymous to admins
+                        }
+                        else chatRoom.tellEveryone("Anonymous User", message); //admins are anonymous to admins
                         }
                         else if (firstWord.equalsIgnoreCase("/nick")){ //to change a user's name
                             if (!scanner.hasNext()) send("You must specify a name.");

@@ -62,6 +62,18 @@ public class ChatServerChatRoom {
             if (thread!=null && thread.isLoggedIn()) thread.tell(name, message);
         }
     }
+    public void tellEveryoneNotAdmins(String name, String message){ //general chat
+        if (message==null || message.length()==0) return;
+        for (ChatServerThread thread : threads){
+            if (thread!=null && thread.isLoggedIn() && !thread.getIsAdmin()) thread.tell(name, message);
+        }
+    }
+    public void tellAdmins(String name, String message){ //general chat
+        if (message==null || message.length()==0) return;
+        for (ChatServerThread thread : threads){
+            if (thread!=null && thread.isLoggedIn() && thread.getIsAdmin()) thread.tell(name, message);
+        }
+    }
     /*
     public void shutDown(){ //called when server is stopping, should kick all the users
         for (ChatServerThread thread : threads){
@@ -79,7 +91,7 @@ public class ChatServerChatRoom {
         StringBuffer ret = new StringBuffer(threads.size()*10+12);
         ret.append("Users in room: [");
         for (ChatServerThread thread : threads){
-            if (thread!=null && thread.getUserName()!=null && thread.isAlive())
+            if (thread!=null && thread.isLoggedIn() && thread.isAlive())
             ret.append(""+thread.getUserName()+", ");
         }
         ret.delete(ret.length()-2, ret.length());
