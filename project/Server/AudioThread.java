@@ -64,5 +64,6 @@ public class AudioThread extends Thread{
         try{
         isRunning = false; clientSocket1.close(); clientSocket2.close();
         } catch (Exception e){ e.printStackTrace(); }
+        System.out.println("Audio chat server closing on command.");
     }
 }

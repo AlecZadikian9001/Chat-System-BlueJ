@@ -74,7 +74,8 @@ public class AudioClient extends Thread //sending data to server socket
             line.close();
             socket.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e);
+            //probably the server closed it
         }
     }
 

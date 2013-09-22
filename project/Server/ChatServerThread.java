@@ -159,6 +159,7 @@ public class ChatServerThread extends Thread {
                         }
                         else if (firstWord.equalsIgnoreCase("/decline")){
                             chatServer.endAudioChat(pendingAudioChat); pendingAudioChat = null;
+                            send("Audio chat cancelled.");
                         }
                         
                         else if (firstWord.equalsIgnoreCase("/changeroom")){

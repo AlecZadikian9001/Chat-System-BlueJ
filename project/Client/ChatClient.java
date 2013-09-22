@@ -15,7 +15,7 @@ public class ChatClient extends JFrame implements ActionListener {
     private JTextField typedText   = new JTextField(32);
   
     
-    AudioClient client; //the audio chat client
+    private AudioClient client; //the audio chat client
 
     // socket for connection to chat server
     private Socket socket;
@@ -129,6 +129,7 @@ public class ChatClient extends JFrame implements ActionListener {
         typedText.requestFocusInWindow();
         setVisible(true);
 
+        listen();
     }
 
     
@@ -185,7 +186,7 @@ public class ChatClient extends JFrame implements ActionListener {
             {
                 try
                 {
-                    System.out.println("Client making new audio chat socket on port: "+socket.getPort()+1);
+                    System.out.println("Client making new audio chat socket on port: "+(socket.getPort()+1));
                 if (client==null)
                 { client = new AudioClient(new Socket(socket.getInetAddress(), socket.getPort()+1)); client.start(); }
                 
@@ -216,6 +217,5 @@ public class ChatClient extends JFrame implements ActionListener {
     public static void main(String[] args)  
     {
         ChatClient client = new ChatClient(args[0], args[1]);
-        client.listen();
     } 
 }
