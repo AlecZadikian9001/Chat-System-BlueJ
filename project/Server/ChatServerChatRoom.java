@@ -25,8 +25,7 @@ public class ChatServerChatRoom {
     public void addThread(ChatServerThread thread){ //replaces the first dead thread with this one, taking its id
         int count = threads.size(); boolean found = false;
         for (int i = 0; i<count; i++){
-            ChatServerThread thread2 = threads.get(i);
-            if (thread2==null || !thread2.isAlive()){
+            if (!threads.get(i).isAlive()){
                 thread.setID(i);
             //    thread.setUserName(""+i);
                 threads.remove(i);
@@ -45,12 +44,6 @@ public class ChatServerChatRoom {
         //thread.tell("Server Message", "You've joined the chat room "+name+".");
         //tellEveryone( "Server Message", ""+thread.getUserName()+" joined the room."); //id -1 reserved for server messages
     }
-    
-    public void removeThread(ChatServerThread thread){
-        int id = thread.getID();
-        threads.remove(id);
-        threads.add(id, null); //to fill the space in the "hash set"
-    }
 
     public String getName(){ return name; }
 
@@ -62,18 +55,6 @@ public class ChatServerChatRoom {
             if (thread!=null && thread.isLoggedIn()) thread.tell(name, message);
         }
     }
-    public void tellEveryoneNotAdmins(String name, String message){ //general chat
-        if (message==null || message.length()==0) return;
-        for (ChatServerThread thread : threads){
-            if (thread!=null && thread.isLoggedIn() && !thread.getIsAdmin()) thread.tell(name, message);
-        }
-    }
-    public void tellAdmins(String name, String message){ //general chat
-        if (message==null || message.length()==0) return;
-        for (ChatServerThread thread : threads){
-            if (thread!=null && thread.isLoggedIn() && thread.getIsAdmin()) thread.tell(name, message);
-        }
-    }
     /*
     public void shutDown(){ //called when server is stopping, should kick all the users
         for (ChatServerThread thread : threads){
@@ -81,22 +62,8 @@ public class ChatServerChatRoom {
         }
     }
     */
-    public void close(){ //called when room is closing, should kick all users
-        for (ChatServerThread thread : threads){
-            thread.disconnect("Room is closing.");
-        }
-    }
-    
-    public String getUsers(){
-        StringBuffer ret = new StringBuffer(threads.size()*10+12);
-        ret.append("Users in room: [");
-        for (ChatServerThread thread : threads){
-            if (thread!=null && thread.isLoggedIn() && thread.isAlive())
-            ret.append(""+thread.getUserName()+", ");
-        }
-        ret.delete(ret.length()-2, ret.length());
-        ret.append("]");
-        return ret.toString();
+    public void close(){ //called when room is closing, should kick all users into the lobby
+        //TODO
     }
 
     /*  public boolean changeUserName(String name, int id){
