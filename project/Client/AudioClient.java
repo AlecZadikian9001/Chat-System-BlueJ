@@ -78,5 +78,5 @@ public class AudioClient extends Thread //sending data to server socket
         }
     }
 
-    public void stopRunning(){ try{isRunning = false; socket.close();} catch(Exception e){} }
+    public void stopRunning(){ try{isRunning = false;} catch(Exception e){} }
 }
