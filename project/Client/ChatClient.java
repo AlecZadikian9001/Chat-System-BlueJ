@@ -10,7 +10,7 @@ public class ChatClient extends JFrame implements ActionListener {
     private String pass;
     private boolean encrypted;
 
-    
+    private JFrame audio;
     private JTextArea  enteredText = new JTextArea(10, 32);
     private JTextField typedText   = new JTextField(32);
   
@@ -33,6 +33,7 @@ public class ChatClient extends JFrame implements ActionListener {
             socket = new Socket(hostName, Integer.parseInt(port));
             out    = new Out(socket);
             in     = new In(socket); //IF SERVER SENDS A SINGLE MESSAGE W/ RIGHT CURLY BRACE, 
+            client = new AudioClient(socket);
         }
         catch (Exception ex) { ex.printStackTrace(); }
 
@@ -53,7 +54,10 @@ public class ChatClient extends JFrame implements ActionListener {
 
         // create GUI stuff
         enteredText.setEditable(false);
-        enteredText.setBackground(Color.GREEN);
+        enteredText.setBackground(Color.BLACK);
+        enteredText.setForeground(Color.GREEN);
+        typedText.setForeground(Color.GREEN);
+        typedText.setBackground(Color.BLACK);
         typedText.addActionListener(this);
         
         
@@ -66,6 +70,21 @@ public class ChatClient extends JFrame implements ActionListener {
         String pizzle = getPass.showInputDialog("Please input your password.");//gets name
         out.println(pizzle);
         pass= pizzle;
+        
+        
+        
+        audio = new JFrame ("Audio Chat with Cheese");
+        audio.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        audio.setSize(150,150);
+        
+        //TO KILL, client.disconnect
+        JButton exit = new JButton ("EXIT AUDIO CHAT");
+        exit.addActionListener(this);
+        audio.add(exit);
+        
+        exit.setVisible(true);
+        audio.setVisible(true);
         
         
         
@@ -84,6 +103,22 @@ public class ChatClient extends JFrame implements ActionListener {
         //content.add(menubar);
         
         
+        //  Create jframe for audio w/ controls
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        //listen();
+        
+        
+        
+        
         // to encrypt, use /encrypt & encryption class
         //put button 
         //every time message is sent while encryption is on, put {slash in front of it
@@ -98,18 +133,45 @@ public class ChatClient extends JFrame implements ActionListener {
 
     
     
+    
+    
     // process TextField after user hits Enter
     public void actionPerformed(ActionEvent e) 
     {
         if (e.getSource() instanceof JMenuItem)
         {
+            JOptionPane finalMess = new JOptionPane();
+            String fina = finalMess.showInputDialog("Any final words, coward?");
+            out.println(fina);
+            out.println("/disconnect");
+        }
+        else if (e.getSource() instanceof JTextField)
+        {
+            String outy = typedText.getText();
+            out.println(outy);
+            typedText.setText("");
+            typedText.requestFocusInWindow();
+        }
+        else if (e.getSource() instanceof JButton)
+        {
+            //make new jframe asking "are you sure"
+            //if yes, client.disconnect
+            //if no, kill jframe and do nothing
+            JOptionPane sure = new JOptionPane ("Exit audiochat", JOptionPane.INFORMATION_MESSAGE);
+            
+            int dave = JOptionPane.showConfirmDialog(null,"Are you sure you want to exit audiochat?", "Exit Audiochat", JOptionPane.YES_NO_OPTION);
+            if (dave==0)
+            {
+                client.stopRunning();
+                audio.setVisible(false);
+            }
+            else if (dave==1)
+            {
+            }
             
         }
-        //else if (// YADA YADA YADA PUT A BUNCH OF IFS REGARDING GETSOURCE 
-        String outy = typedText.getText();
-        out.println(outy);
-        typedText.setText("");
-        typedText.requestFocusInWindow();
+        
+               
     }
     
     
