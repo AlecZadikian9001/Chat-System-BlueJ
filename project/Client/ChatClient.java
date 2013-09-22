@@ -53,10 +53,7 @@ public class ChatClient extends JFrame implements ActionListener {
 
         // create GUI stuff
         enteredText.setEditable(false);
-        enteredText.setBackground(Color.BLACK);
-        enteredText.setForeground(Color.GREEN);
-        typedText.setForeground(Color.GREEN);
-        typedText.setBackground(Color.BLACK);
+        enteredText.setBackground(Color.GREEN);
         typedText.addActionListener(this);
         
         
@@ -69,18 +66,6 @@ public class ChatClient extends JFrame implements ActionListener {
         String pizzle = getPass.showInputDialog("Please input your password.");//gets name
         out.println(pizzle);
         pass= pizzle;
-        
-        
-        
-        JFrame audio = new JFrame ("Audio Chat with Cheese");
-        audio.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        audio.setSize(600,600);
-        
-        //TO KILL, client.disconnect
-        JButton exit = new JButton ("EXIT AUDIO CHAT");
-        
-        audio.setVisible(true);
         
         
         
@@ -99,22 +84,6 @@ public class ChatClient extends JFrame implements ActionListener {
         //content.add(menubar);
         
         
-        //  Create jframe for audio w/ controls
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         // to encrypt, use /encrypt & encryption class
         //put button 
         //every time message is sent while encryption is on, put {slash in front of it
@@ -129,33 +98,18 @@ public class ChatClient extends JFrame implements ActionListener {
 
     
     
-    
-    
     // process TextField after user hits Enter
     public void actionPerformed(ActionEvent e) 
     {
         if (e.getSource() instanceof JMenuItem)
         {
-            JOptionPane finalMess = new JOptionPane();
-            String fina = finalMess.showInputDialog("Any final words, coward?");
-            out.println(fina);
-            out.println("/disconnect");
+            
         }
-        else if (e.getSource() instanceof JTextField)
-        {
-            String outy = typedText.getText();
-            out.println(outy);
-            typedText.setText("");
-            typedText.requestFocusInWindow();
-        }
-        else if (e.getSource() instanceof JButton)
-        {
-            //make new jframe asking "are you sure"
-            //if yes, client.disconnect
-            //if no, kill jframe and do nothing
-        }
-        
-               
+        //else if (// YADA YADA YADA PUT A BUNCH OF IFS REGARDING GETSOURCE 
+        String outy = typedText.getText();
+        out.println(outy);
+        typedText.setText("");
+        typedText.requestFocusInWindow();
     }
     
     

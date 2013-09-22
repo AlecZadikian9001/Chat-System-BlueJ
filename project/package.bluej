@@ -1,13 +1,13 @@
 #BlueJ package file
 package.editor.height=400
 package.editor.width=560
-package.editor.x=830
-package.editor.y=22
+package.editor.x=-83
+package.editor.y=55
 package.numDependencies=0
 package.numTargets=4
 package.showExtends=true
 package.showUses=true
-project.charset=MacRoman
+project.charset=x-MacRoman
 target1.height=62
 target1.name=Garbage
 target1.type=PackageTarget
