@@ -55,7 +55,7 @@ public class AudioThread extends Thread{
                 out1.write(client2Data, 0, client2BytesRead); //sending to client 1
                 out2.write(client1Data, 0, client1BytesRead); //sending to client 2
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("Audio chat server closed due to client disconnecting.");
         }
     }

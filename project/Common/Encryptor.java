@@ -18,7 +18,7 @@ public class Encryptor {
 	}
 
 	public static String encrypt(String input){
-	    if (input==null) return null;
+	    if (input==null || input.length()==0) return null;
 		String even = "";
         String odd = "";
 
@@ -36,7 +36,7 @@ public class Encryptor {
 	}
 	
 	public static String decrypt(String input){
-	    if (input==null) return null;
+	    if (input==null || input.length()==0) return null;
 		String end = "";
 
         if (input.length()%2 == 0)

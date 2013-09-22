@@ -24,6 +24,7 @@ target2.editor.x=139
 target2.editor.y=196
 target2.height=50
 target2.name=Encryptor
+target2.naviview.expanded=true
 target2.showInterface=false
 target2.type=ClassTarget
 target2.width=80

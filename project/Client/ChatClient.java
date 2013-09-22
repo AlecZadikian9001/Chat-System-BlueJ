@@ -15,7 +15,7 @@ public class ChatClient extends JFrame implements ActionListener {
     private JTextField typedText   = new JTextField(32);
   
     
-    private AudioClient client; //the audio chat client
+    private AudioClient audioClient = null; //the audio chat client
 
     // socket for connection to chat server
     private Socket socket;
@@ -33,7 +33,6 @@ public class ChatClient extends JFrame implements ActionListener {
             socket = new Socket(hostName, Integer.parseInt(port));
             out    = new Out(socket);
             in     = new In(socket); //IF SERVER SENDS A SINGLE MESSAGE W/ RIGHT CURLY BRACE, 
-            client = new AudioClient(socket);
         }
         catch (Exception ex) { ex.printStackTrace(); }
 
@@ -163,7 +162,7 @@ public class ChatClient extends JFrame implements ActionListener {
             int dave = JOptionPane.showConfirmDialog(null,"Are you sure you want to exit audiochat?", "Exit Audiochat", JOptionPane.YES_NO_OPTION);
             if (dave==0)
             {
-                client.stopRunning();
+                audioClient.stopRunning();
                 audio.setVisible(false);
             }
             else if (dave==1)
@@ -187,8 +186,8 @@ public class ChatClient extends JFrame implements ActionListener {
                 try
                 {
                     System.out.println("Client making new audio chat socket on port: "+(socket.getPort()+1));
-                if (client==null)
-                { client = new AudioClient(new Socket(socket.getInetAddress(), socket.getPort()+1)); client.start(); }
+                if (audioClient==null)
+                { audioClient = new AudioClient(new Socket(socket.getInetAddress(), socket.getPort()+1)); audioClient.start(); }
                 
                 else 
                     System.out.println("Duplicate audio chat clients attempted...?");
@@ -197,7 +196,7 @@ public class ChatClient extends JFrame implements ActionListener {
             
             else if (s.equals("/decline"))
             {
-                if (client!=null){ client.stopRunning(); client = null; }
+                if (audioClient!=null){ audioClient.stopRunning(); audioClient = null; }
             }
             
             else
@@ -216,6 +215,6 @@ public class ChatClient extends JFrame implements ActionListener {
 
     public static void main(String[] args)  
     {
-        ChatClient client = new ChatClient(args[0], args[1]);
+        ChatClient client2 = new ChatClient(args[0], args[1]);
     } 
 }
