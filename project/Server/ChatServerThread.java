@@ -30,12 +30,16 @@ public class ChatServerThread extends Thread {
     public int getID(){ return id; }
 
     public void setID(int a){ id = a; }
+    
+    public boolean getIsAdmin(){ return user.getIsAdmin(); }
 
     public String getUserName(){ if (user!=null) return user.getName(); return null; }
 
     public void setUserName(String n){ user.setName(n); }
 
-    public ChatServerChatRoom getChatRoom(){ return chatRoom; }
+    public ChatServerChatRoom getRoom(){ return chatRoom; }
+    
+    public void setRoom(ChatServerChatRoom room){ chatRoom = room; }
 
     public ChatServerThread(Socket socket, UserAccount account, ChatServerChatRoom  chatRoom, ChatServerMain chatServer){
         user = account;
@@ -110,6 +114,15 @@ public class ChatServerThread extends Thread {
                             System.out.println("User "+user.getName()+" saying (privately) "+message+" to target "+target+".");
                             if (!chatServer.tellUser(user.getName()+" (privately)", target, message)) send("User not found online.");
                         }
+                        else if (firstWord.equalsIgnoreCase("/anonymous")){
+                            String message = "";
+                            message = fromClient.substring(10, fromClient.length()); //10 is the length of /anonymous
+                            if (!user.getIsAdmin()){
+                            chatRoom.tellEveryoneNotAdmins("Anonymous User", message);
+                            chatRoom.tellAdmins(""+user.getName()+" (anonymously)", message); //users not anonymous to admins
+                        }
+                        else chatRoom.tellEveryone("Anonymous User", message); //admins are anonymous to admins
+                        }
                         else if (firstWord.equalsIgnoreCase("/nick")){ //to change a user's name
                             if (!scanner.hasNext()) send("You must specify a name.");
                             String oldName = user.getName();
@@ -136,21 +149,110 @@ public class ChatServerThread extends Thread {
                             }
                         }
                         else if (firstWord.equalsIgnoreCase("/accept")){
+                            if (pendingAudioChat==null || pendingAudioChat.length()==0){ send("No pending audio chat request to accept."); }
+                            else{
                             Scanner tempScanner = new Scanner(pendingAudioChat); String sender = tempScanner.next(); String target = tempScanner.next();
                             System.out.println("User "+target+" accepted audio chat with "+sender+".");
                             if (chatServer.audioChat(sender, target)){ send("/accept"); System.out.println("User "+user.getName()+" accepted audio chat."); }
-                            else send("Unable to accept request or no request availalbe.");
+                            else send("No pending audio chat request to accept.");
+                            }
                         }
                         else if (firstWord.equalsIgnoreCase("/decline")){
                             chatServer.endAudioChat(pendingAudioChat); pendingAudioChat = null;
                         }
-                        /*      else if (firstWord.equalsIgnoreCase("/changeroom")){
+                        
+                        else if (firstWord.equalsIgnoreCase("/changeroom")){
                         if (!scanner.hasNext()) send("You must specify a room name.");
-                        else if (!chatServer.changeRoom(scanner.next(), user.getName())) send("Invalid room name specified. ");   TODO
-                        } */
+                        else if (!chatServer.changeRoom(user.getName(), scanner.next())) send("Invalid room name specified. "); 
+                        else{
+                            this.tell("Server Message", "You've joined the chat room "+chatRoom.getName()+".");
+        chatRoom.tellEveryone("Server Message", ""+user.getName()+" joined the room.");
+                        }
+                        }
+                        
+                        else if (firstWord.equalsIgnoreCase("/rooms")){
+                            send(chatServer.getRoomNames());
+                        }
+                        
+                        else if (firstWord.equalsIgnoreCase("/users")){
+                            send(chatRoom.getUsers());
+                        }
+                        
+                        else if (firstWord.equalsIgnoreCase("/addroom")){
+                        if (!user.getIsAdmin()) send("You do not have permission to use this command.");
+                        else{
+                        if (!scanner.hasNext()) send("You must specify a room name.");
+                        else if (!chatServer.addRoom(scanner.next())) send("Invalid room name specified. "); 
+                        else send("New room created.");
+                        }
+                        }
+                        
+                        else if (firstWord.equalsIgnoreCase("/removeroom")){
+                        if (!user.getIsAdmin()) send("You do not have permission to use this command.");
+                        else{
+                        if (!scanner.hasNext()) send("You must specify a room name.");
+                        else if (!chatServer.removeRoom(scanner.next())) send("Invalid room name specified. "); 
+                        else send("Room removed.");
+                        }
+                        }
+                        
+                        else if (firstWord.equalsIgnoreCase("/ban")){
+                            if (!user.getIsAdmin()) send("You do not have permission to use this command.");
+                            else{
+                            if (!scanner.hasNext()) send("You must specify a user.");
+                 
+                            else{
+                                String target = scanner.next();
+                                if (chatServer.banUser(target)) send("Banned user "+target);
+                                else send("Could not ban user "+target);
+                            }
+                        }
+                        }
+                        
+                        else if (firstWord.equalsIgnoreCase("/unban")){
+                            if (!user.getIsAdmin()) send("You do not have permission to use this command.");
+                            else{
+                            if (!scanner.hasNext()) send("You must specify a user.");
+                            
+                            else{
+                                String target = scanner.next();
+                                if (chatServer.unbanUser(target)) send("Unbanned user "+target);
+                                else send("Could not unban user "+target);
+                            }
+                        }
+                        }
+                        
+                        else if (firstWord.equalsIgnoreCase("/op")){
+                            if (!user.getIsAdmin()) send("You do not have permission to use this command.");
+                            else{
+                            if (!scanner.hasNext()) send("You must specify a user.");
+                   
+                            else{
+                                String target = scanner.next();
+                                if (chatServer.promoteUser(target)) send("Opped user "+target);
+                                else send("Could not op user "+target);
+                            }
+                        }
+                        }
+                        
+                        else if (firstWord.equalsIgnoreCase("/deop")){
+                            if (!user.getIsAdmin()) send("You do not have permission to use this command.");
+                            else{
+                            if (!scanner.hasNext()) send("You must specify a user.");
+                    
+                            else{
+                                String target = scanner.next();
+                                if (chatServer.demoteUser(target)) send("Deopped user "+target);
+                                else send("Could not deop user "+target);
+                            }
+                        }
+                        }
+                        
                         else send("Invalid command.");
                         scanner.close();
                     }
+                    
+                
 
                     else chatRoom.tellEveryone(user.getName(), fromClient);
                 }
@@ -190,7 +292,7 @@ public class ChatServerThread extends Thread {
     
     public boolean audioChat(String user){
         if (pendingAudioChat!=null) return false;
-        tell(user, "I've invited you to an audio chat. Type /accept to accept or /decline to decline. If you accept, you can still exit at any time with /decline.");
+        tell(user, "I've invited you to an audio chat. Type /accept to accept or /decline to decline.");
         pendingAudioChat = (""+user+" "+this.user.getName());
         return true;
     }
