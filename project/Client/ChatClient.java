@@ -149,8 +149,7 @@ public class ChatClient extends JFrame implements ActionListener {
         {
             JOptionPane finalMess = new JOptionPane();
             String fina = finalMess.showInputDialog("Any final words, coward?");
-            out.println(fina);
-            out.println("/disconnect");
+            out.println("/disconnect "+fina);
         }
         else if (e.getSource() instanceof JTextField)
         {
