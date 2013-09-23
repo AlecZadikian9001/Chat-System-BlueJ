@@ -118,6 +118,7 @@ public class AudioClient extends Thread implements ActionListener //sending data
             line.close();
             socket.close();
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println(e);
             stopRunning();
             //probably the server closed it
@@ -126,13 +127,10 @@ public class AudioClient extends Thread implements ActionListener //sending data
 
     public void stopRunning()
     { 
+        System.out.println("Audio stopRunning called");
         try{isRunning = false;
         audio.setVisible(false);
+        audio.validate();
     } catch(Exception e){} 
         }
-    
-    public boolean isRun()
-    {
-        return isRunning;
-    }
 }

@@ -40,7 +40,7 @@ public class Out {
     public void println(long x)    { out.println(x); }
 
     public void print()            {                 out.flush(); }
-    public void print(Object x)    { String bob = Encryptor.encrypt((String) x,5);
+    public void print(Object x)    { if (x==null) return; String bob = Encryptor.encrypt((String) x,5);
         out.print(bob); out.flush();   out.flush(); }
     public void print(boolean x)   { out.print(x);   out.flush(); }
     public void print(char x)      { out.print(x);   out.flush(); }

@@ -78,7 +78,7 @@ public class ChatClient extends JFrame implements ActionListener {
         System.out.println("Name: "+nicky);
         out.println(nicky);
         name = nicky;
-        
+      /*  
         if (!socket.isConnected())
         {
             JOptionPane getNameAgain = new JOptionPane();
@@ -87,25 +87,20 @@ public class ChatClient extends JFrame implements ActionListener {
             out.println(nik);
             name = nik;
         }
-        
+        */
         JOptionPane getPass = new JOptionPane();
         String pizzle = getPass.showInputDialog("Please input your password.");//gets name
         out.println(pizzle);
         pass= pizzle;
         
-        if (!socket.isConnected())
+      /*  if (!socket.isConnected())
         {
             JOptionPane getPassAgain = new JOptionPane();
-            String paa = getPassAgain.showInputDialog("That is not a valid password.  Please input your password.");//gets name
+            String paa = getPassAgain.showInputDialog("That is not a valid password. Please input your password.");//gets name
             
             out.println(paa);
             pass = paa;
-        }
-        
-        
-        
-        
-        
+        } */
         
         Container content = getContentPane();
         content.add(new JScrollPane(enteredText), BorderLayout.CENTER);

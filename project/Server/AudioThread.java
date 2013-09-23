@@ -57,6 +57,7 @@ public class AudioThread extends Thread{
             }
         } catch (Exception e) {
             System.out.println("Audio chat server closed due to client disconnecting.");
+            stopRunning();
         }
     }
 

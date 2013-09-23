@@ -85,7 +85,7 @@ public class ChatServerThread extends Thread {
         if (user==null){ send("Invalid password or username, disconnecting!"); System.out.println("Disconnecting user because of bad login."); forceDisconnect(); return; }
         user.setThread(this);
 
-        this.tell("Server Message", "You've joined the chat room "+chatRoom.getName()+".");
+        send("You've joined the chat room "+chatRoom.getName()+".");
         chatRoom.tellEveryone("Server Message", ""+user.getName()+" joined the room.");
         //else{ System.out.println("Unknown error run ChatServerThread run from handling login!!!"); this.out.println("Technical difficulties, disconnecting."); forceDisconnect(); }
 
@@ -168,7 +168,7 @@ public class ChatServerThread extends Thread {
                         if (!scanner.hasNext()) send("You must specify a room name.");
                         else if (!chatServer.changeRoom(user.getName(), scanner.next())) send("Invalid room name specified. "); 
                         else{
-                            this.tell("Server Message", "You've joined the chat room "+chatRoom.getName()+".");
+                            send("You've joined the chat room "+chatRoom.getName()+".");
         chatRoom.tellEveryone("Server Message", ""+user.getName()+" joined the room.");
                         }
                         }
@@ -283,7 +283,7 @@ public class ChatServerThread extends Thread {
 
     public void forceDisconnect(){ //just disconnect, sending no messages
         System.out.println("Client disconnected forcibly");
-        tell("Server Message", "You have been disconnected forcibly.");
+        send("You have been disconnected forcibly.");
         this.user = null; //causes the thread to stop
         try{
             this.socket.close();
