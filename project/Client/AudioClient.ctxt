@@ -9,4 +9,6 @@ comment3.params=
 comment3.target=void\ run()
 comment4.params=
 comment4.target=void\ stopRunning()
-numComments=5
+comment5.params=
+comment5.target=boolean\ isRun()
+numComments=6

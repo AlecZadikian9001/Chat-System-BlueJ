@@ -53,7 +53,7 @@ public class AudioClient extends Thread implements ActionListener //sending data
             if (dave==0)
             {
                 stopRunning();
-                audio.setVisible(false);
+                
             }
             else if (dave==1)
             {
@@ -119,9 +119,20 @@ public class AudioClient extends Thread implements ActionListener //sending data
             socket.close();
         } catch (Exception e) {
             System.out.println(e);
+            stopRunning();
             //probably the server closed it
         }
     }
 
-    public void stopRunning(){ try{isRunning = false;} catch(Exception e){} }
+    public void stopRunning()
+    { 
+        try{isRunning = false;
+        audio.setVisible(false);
+    } catch(Exception e){} 
+        }
+    
+    public boolean isRun()
+    {
+        return isRunning;
+    }
 }

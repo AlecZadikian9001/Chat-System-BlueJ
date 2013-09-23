@@ -205,7 +205,6 @@ public class ChatClient extends JFrame implements ActionListener {
 
     public static void main(String[] args)  
     {
-        ChatClient client2 = new ChatClient("zadikian.info","9000");
-        ChatClient client3 = new ChatClient("zadikian.info","9000");
+        ChatClient client = new ChatClient(args[0], args[1]);
     } 
 }
