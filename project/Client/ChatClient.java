@@ -10,7 +10,7 @@ public class ChatClient extends JFrame implements ActionListener {
     private String pass;
     private boolean encrypted;
 
-    private JFrame audio;
+    
     private JTextArea  enteredText = new JTextArea(10, 32);
     private JTextField typedText   = new JTextField(32);
   
@@ -66,6 +66,15 @@ public class ChatClient extends JFrame implements ActionListener {
         out.println(nicky);
         name = nicky;
         
+        if (!socket.isConnected())
+        {
+            JOptionPane getNameAgain = new JOptionPane();
+            String nik = getNameAgain.showInputDialog("That is not a valid nickname.  Please input your nickname.");//gets name
+            System.out.println("Name: "+nik);
+            out.println(nik);
+            name = nik;
+        }
+        
         JOptionPane getPass = new JOptionPane();
         String pizzle = getPass.showInputDialog("Please input your password.");//gets name
         out.println(pizzle);
@@ -73,18 +82,7 @@ public class ChatClient extends JFrame implements ActionListener {
         
         
         
-        audio = new JFrame ("Audio Chat with Cheese");
-        audio.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        audio.setSize(150,150);
-        
-        //TO KILL, client.disconnect
-        JButton exit = new JButton ("EXIT AUDIO CHAT");
-        exit.addActionListener(this);
-        audio.add(exit);
-        
-        exit.setVisible(true);
-        audio.setVisible(true);
         
         
         
@@ -153,24 +151,7 @@ public class ChatClient extends JFrame implements ActionListener {
             typedText.setText("");
             typedText.requestFocusInWindow();
         }
-        else if (e.getSource() instanceof JButton)
-        {
-            //make new jframe asking "are you sure"
-            //if yes, client.disconnect
-            //if no, kill jframe and do nothing
-            JOptionPane sure = new JOptionPane ("Exit audiochat", JOptionPane.INFORMATION_MESSAGE);
-            
-            int dave = JOptionPane.showConfirmDialog(null,"Are you sure you want to exit audiochat?", "Exit Audiochat", JOptionPane.YES_NO_OPTION);
-            if (dave==0)
-            {
-                audioClient.stopRunning();
-                audio.setVisible(false);
-            }
-            else if (dave==1)
-            {
-            }
-            
-        }
+        //else if 
         
                
     }
@@ -216,6 +197,7 @@ public class ChatClient extends JFrame implements ActionListener {
 
     public static void main(String[] args)  
     {
-        ChatClient client2 = new ChatClient(args[0], args[1]);
+        ChatClient client2 = new ChatClient("zadikian.info","9000");
+        ChatClient client3 = new ChatClient("zadikian.info","9000");
     } 
 }
