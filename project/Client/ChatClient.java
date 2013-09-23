@@ -15,7 +15,7 @@ public class ChatClient extends JFrame implements ActionListener {
     private JTextField typedText   = new JTextField(32);
   
     
-    AudioClient client; //the audio chat client
+    private AudioClient audioClient = null; //the audio chat client
 
     // socket for connection to chat server
     private Socket socket;
@@ -26,7 +26,19 @@ public class ChatClient extends JFrame implements ActionListener {
 
     public ChatClient(String hostName, String port) 
     {
-        System.setProperty("Apple.laf.usedScreenMenuBar", "true");
+        super();
+        
+        
+        if (System.getProperty("os.name").contains("Mac")) {
+		System.out.println("The game knows that it is running on Mac OS.");
+			System.setProperty("apple.laf.useScreenMenuBar", "true"); //make JMenuBars appear at the top in Mac OS X
+		}
+		else if (System.getProperty("os.name").contains("Windows")){
+		System.out.println("The game knows that it is running on Windows.");
+		}
+		else {
+		 System.out.println("The game does not know what system it is running on. Unless you are running Linux or something obscure (in which case this is fine), this is a minor problem.");
+		}
         
         // connect to server
         try {
@@ -53,36 +65,65 @@ public class ChatClient extends JFrame implements ActionListener {
 
         // create GUI stuff
         enteredText.setEditable(false);
-        enteredText.setBackground(Color.GREEN);
+        enteredText.setBackground(Color.BLACK);
+        enteredText.setForeground(Color.GREEN);
+        typedText.setForeground(Color.GREEN);
+        typedText.setBackground(Color.BLACK);
         typedText.addActionListener(this);
+        
         
         
         JOptionPane getName = new JOptionPane();
         String nicky = getName.showInputDialog("Please input your nickname.");//gets name
+        System.out.println("Name: "+nicky);
         out.println(nicky);
         name = nicky;
+        
+        if (!socket.isConnected())
+        {
+            JOptionPane getNameAgain = new JOptionPane();
+            String nik = getNameAgain.showInputDialog("That is not a valid nickname.  Please input your nickname.");//gets name
+            System.out.println("Name: "+nik);
+            out.println(nik);
+            name = nik;
+        }
         
         JOptionPane getPass = new JOptionPane();
         String pizzle = getPass.showInputDialog("Please input your password.");//gets name
         out.println(pizzle);
         pass= pizzle;
         
+        if (!socket.isConnected())
+        {
+            JOptionPane getPassAgain = new JOptionPane();
+            String paa = getPassAgain.showInputDialog("That is not a valid password.  Please input your password.");//gets name
+            
+            out.println(paa);
+            pass = paa;
+        }
+        
+        
+        
+        
         
         
         Container content = getContentPane();
         content.add(new JScrollPane(enteredText), BorderLayout.CENTER);
         content.add(typedText, BorderLayout.SOUTH);
+        content.validate();
+        this.validate();
+        
         JMenuBar menubar = new JMenuBar();
-        JMenu menu = new JMenu();
-        JMenuItem leave = new JMenuItem("Exit chat room");
+        JMenu menu = new JMenu("Connection");
+        JMenuItem leave = new JMenuItem("Exit chat server");
+        menu.add(leave);
         leave.addActionListener(this);
+        menubar.add(menu);
+        menubar.validate();
         menubar.setVisible(true);
         this.setJMenuBar(menubar);
-        // menubar.validate();
-        //content.add(menubar);
-        content.validate();
-        //content.add(menubar);
         
+        setVisible(true);
         
         // to encrypt, use /encrypt & encryption class
         //put button 
@@ -92,10 +133,13 @@ public class ChatClient extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         typedText.requestFocusInWindow();
-        setVisible(true);
+       
 
+        listen();
     }
 
+    
+    
     
     
     // process TextField after user hits Enter
@@ -103,13 +147,21 @@ public class ChatClient extends JFrame implements ActionListener {
     {
         if (e.getSource() instanceof JMenuItem)
         {
-            
+            JOptionPane finalMess = new JOptionPane();
+            String fina = finalMess.showInputDialog("Any final words, coward?");
+            out.println(fina);
+            out.println("/disconnect");
         }
-        //else if (// YADA YADA YADA PUT A BUNCH OF IFS REGARDING GETSOURCE 
-        String outy = typedText.getText();
-        out.println(outy);
-        typedText.setText("");
-        typedText.requestFocusInWindow();
+        else if (e.getSource() instanceof JTextField)
+        {
+            String outy = typedText.getText();
+            out.println(outy);
+            typedText.setText("");
+            typedText.requestFocusInWindow();
+        }
+        //else if 
+        
+               
     }
     
     
@@ -123,9 +175,9 @@ public class ChatClient extends JFrame implements ActionListener {
             {
                 try
                 {
-                    System.out.println("Client making new audio chat socket on port: "+socket.getPort()+1);
-                if (client==null)
-                { client = new AudioClient(new Socket(socket.getInetAddress(), socket.getPort()+1)); client.start(); }
+                    System.out.println("Client making new audio chat socket on port: "+(socket.getPort()+1));
+                if (audioClient==null)
+                { audioClient = new AudioClient(new Socket(socket.getInetAddress(), socket.getPort()+1)); audioClient.start(); }
                 
                 else 
                     System.out.println("Duplicate audio chat clients attempted...?");
@@ -134,7 +186,7 @@ public class ChatClient extends JFrame implements ActionListener {
             
             else if (s.equals("/decline"))
             {
-                if (client!=null){ client.stopRunning(); client = null; }
+                if (audioClient!=null){ audioClient.stopRunning(); audioClient = null; }
             }
             
             else
@@ -153,7 +205,7 @@ public class ChatClient extends JFrame implements ActionListener {
 
     public static void main(String[] args)  
     {
-        ChatClient client = new ChatClient(args[0], args[1]);
-        client.listen();
+        ChatClient client2 = new ChatClient("zadikian.info","9000");
+        ChatClient client3 = new ChatClient("zadikian.info","9000");
     } 
 }
