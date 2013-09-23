@@ -26,7 +26,19 @@ public class ChatClient extends JFrame implements ActionListener {
 
     public ChatClient(String hostName, String port) 
     {
-        System.setProperty("Apple.laf.usedScreenMenuBar", "true");
+        super();
+        
+        
+        if (System.getProperty("os.name").contains("Mac")) {
+		System.out.println("The game knows that it is running on Mac OS.");
+			System.setProperty("apple.laf.useScreenMenuBar", "true"); //make JMenuBars appear at the top in Mac OS X
+		}
+		else if (System.getProperty("os.name").contains("Windows")){
+		System.out.println("The game knows that it is running on Windows.");
+		}
+		else {
+		 System.out.println("The game does not know what system it is running on. Unless you are running Linux or something obscure (in which case this is fine), this is a minor problem.");
+		}
         
         // connect to server
         try {
@@ -58,6 +70,7 @@ public class ChatClient extends JFrame implements ActionListener {
         typedText.setForeground(Color.GREEN);
         typedText.setBackground(Color.BLACK);
         typedText.addActionListener(this);
+        
         
         
         JOptionPane getName = new JOptionPane();
@@ -97,33 +110,20 @@ public class ChatClient extends JFrame implements ActionListener {
         Container content = getContentPane();
         content.add(new JScrollPane(enteredText), BorderLayout.CENTER);
         content.add(typedText, BorderLayout.SOUTH);
+        content.validate();
+        this.validate();
+        
         JMenuBar menubar = new JMenuBar();
-        JMenu menu = new JMenu();
-        JMenuItem leave = new JMenuItem("Exit chat room");
+        JMenu menu = new JMenu("Connection");
+        JMenuItem leave = new JMenuItem("Exit chat server");
+        menu.add(leave);
         leave.addActionListener(this);
+        menubar.add(menu);
+        menubar.validate();
         menubar.setVisible(true);
         this.setJMenuBar(menubar);
-        // menubar.validate();
-        //content.add(menubar);
-        content.validate();
-        //content.add(menubar);
         
-        
-        //  Create jframe for audio w/ controls
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        //listen();
-        
-        
-        
+        setVisible(true);
         
         // to encrypt, use /encrypt & encryption class
         //put button 
@@ -133,7 +133,7 @@ public class ChatClient extends JFrame implements ActionListener {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         pack();
         typedText.requestFocusInWindow();
-        setVisible(true);
+       
 
         listen();
     }
