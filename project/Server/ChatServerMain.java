@@ -316,7 +316,7 @@ public class ChatServerMain{
     }
 
     public boolean audioChat(String sender, String target){ //this needs to be stress-tested and bug-fixed TODO
-        if (sender.equalsIgnoreCase(target)) return false; //can't do audio chat with yourself!
+        if (sender.equalsIgnoreCase(target)){ System.out.println("Audio chat failed: cause 1"); return false; } //can't do audio chat with yourself!
         AudioThread thread = audioRooms.get(""+sender+" "+target);
         if (thread!=null){ return true; } //if this is an acceptance of a previously sent audio chat
         UserAccount user = users.get(target.toLowerCase());
