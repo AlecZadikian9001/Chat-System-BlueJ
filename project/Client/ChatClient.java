@@ -26,6 +26,7 @@ public class ChatClient extends JFrame implements ActionListener {
 
     public ChatClient(String hostName, String port) 
     {
+        super();
         System.setProperty("Apple.laf.usedScreenMenuBar", "true");
         
         // connect to server
@@ -98,12 +99,14 @@ public class ChatClient extends JFrame implements ActionListener {
         content.add(new JScrollPane(enteredText), BorderLayout.CENTER);
         content.add(typedText, BorderLayout.SOUTH);
         JMenuBar menubar = new JMenuBar();
-        JMenu menu = new JMenu();
+        JMenu menu = new JMenu("Exit");
         JMenuItem leave = new JMenuItem("Exit chat room");
+        menu.add(leave);
+        menubar.add(menu);
         leave.addActionListener(this);
         menubar.setVisible(true);
         this.setJMenuBar(menubar);
-        // menubar.validate();
+       // menubar.validate();
         //content.add(menubar);
         content.validate();
         //content.add(menubar);
@@ -134,7 +137,7 @@ public class ChatClient extends JFrame implements ActionListener {
         pack();
         typedText.requestFocusInWindow();
         setVisible(true);
-
+        this.validate();
         listen();
     }
 
