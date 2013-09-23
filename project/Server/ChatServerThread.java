@@ -59,14 +59,16 @@ public class ChatServerThread extends Thread {
     }
 
     public void send(String a){
+        if (a==null || a.length()==0) return;
         if (ENCRYPTED) a = Encryptor.encrypt(a, 5); //encrypt it 5 times
         this.out.println(a);
     }
 
     public String receive(){
         try{
-            if (ENCRYPTED) return Encryptor.decrypt(this.in.readLine(), 5); //decrypt it 5 times
-            else return this.in.readLine();
+            String input = this.in.readLine(); if (input==null){ System.out.println("Server thread received null string."); return null; }
+            if (ENCRYPTED) return Encryptor.decrypt(input, 5); //decrypt it 5 times
+            else return input;
         } catch (Exception e) {}
         return null;
     }

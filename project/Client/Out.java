@@ -30,7 +30,7 @@ public class Out {
 
 
     public void println()          { out.println();  out.flush(); }
-    public void println(Object x)  { String bob = Encryptor.encrypt((String) x,5);
+    public void println(Object x)  { if (x==null) return; String bob = Encryptor.encrypt((String) x,5);
         out.println(bob); out.flush(); }
     public void println(boolean x) { out.println(x); out.flush(); }
     public void println(char x)    { out.println(x); out.flush(); }

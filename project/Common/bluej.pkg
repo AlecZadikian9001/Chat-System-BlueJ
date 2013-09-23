@@ -1,8 +1,8 @@
 #BlueJ package file
-package.editor.height=400
+package.editor.height=385
 package.editor.width=560
-package.editor.x=1235
-package.editor.y=370
+package.editor.x=19
+package.editor.y=526
 package.numDependencies=0
 package.numTargets=3
 package.showExtends=true
@@ -20,8 +20,8 @@ target1.x=10
 target1.y=90
 target2.editor.height=700
 target2.editor.width=900
-target2.editor.x=139
-target2.editor.y=196
+target2.editor.x=375
+target2.editor.y=30
 target2.height=50
 target2.name=Encryptor
 target2.naviview.expanded=true

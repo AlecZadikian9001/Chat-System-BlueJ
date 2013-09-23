@@ -2,7 +2,8 @@ package Common;
 public class Encryptor {
 	
 	public static String encrypt(String input, int times){ //encrypting multiple times
-		String ret = input;
+		if (input==null || input.length()==0) return null;
+	    String ret = input;
 		for (int i = 0; i<times; i++){
 			ret = encrypt(ret);
 		}
@@ -10,7 +11,8 @@ public class Encryptor {
 	}
 	
 	public static String decrypt(String input, int times){ //decrypting multiple times
-		String ret = input;
+		if (input==null || input.length()==0) return null;
+	    String ret = input;
 		for (int i = 0; i<times; i++){
 			ret = decrypt(ret);
 		}

@@ -62,6 +62,7 @@ public class ChatClient extends JFrame implements ActionListener {
         
         JOptionPane getName = new JOptionPane();
         String nicky = getName.showInputDialog("Please input your nickname.");//gets name
+        System.out.println("Name: "+nicky);
         out.println(nicky);
         name = nicky;
         
