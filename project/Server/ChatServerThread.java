@@ -285,7 +285,11 @@ public class ChatServerThread extends Thread {
         System.out.println("Client disconnected forcibly");
         tell("Server Message", "You have been disconnected forcibly.");
         this.user = null; //causes the thread to stop
-        //this.user = null;
+        try{
+            this.socket.close();
+            this.in.close();
+            this.out.close();
+        } catch (Exception e) { System.out.println("Caught non-problematic exception: "+e); }
     }
 
     public void tell(String user, String message){
