@@ -80,6 +80,14 @@ public class ChatClient extends JFrame implements ActionListener {
         out.println(pizzle);
         pass= pizzle;
         
+        if (!socket.isConnected())
+        {
+            JOptionPane getPassAgain = new JOptionPane();
+            String paa = getPassAgain.showInputDialog("That is not a valid password.  Please input your password.");//gets name
+            
+            out.println(paa);
+            pass = paa;
+        }
         
         
         
